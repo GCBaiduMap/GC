@@ -1,4 +1,4 @@
-package gc.com.gcmapapp;
+package gc.com.gcmapapp.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -31,6 +31,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import gc.com.gcmapapp.R;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
