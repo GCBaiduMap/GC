@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements BaiduMap.OnMapLoa
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        ms = new MapStatus.Builder().target(new LatLng(39.914935, 116.403119)).zoom(8).build();
+        ms = new MapStatus.Builder().target(new LatLng(31.019261, 121.205807)).zoom(8).build();
         mBaiduMap = bmapView.getMap();
         mBaiduMap.setOnMapLoadedCallback(this);
         mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
@@ -60,8 +60,11 @@ public class MainActivity extends AppCompatActivity implements BaiduMap.OnMapLoa
             public boolean onClusterClick(Cluster<MyItem> cluster) {
                 Toast.makeText(MainActivity.this,
                         "有" + cluster.getSize() + "个点", Toast.LENGTH_SHORT).show();
-//                ms = new MapStatus.Builder().zoom(14).build();
-//                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
+                float zoom = mBaiduMap.getMapStatus().zoom;
+                if(zoom < 12)
+                    zoom = 12;
+                ms = new MapStatus.Builder().target(cluster.getPosition()).zoom(zoom).build();
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
 
                 return false;
             }
