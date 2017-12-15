@@ -6,6 +6,8 @@ import gc.com.gcmapapp.bean.Login;
 import gc.com.gcmapapp.bean.MapResult;
 import gc.com.gcmapapp.bean.Menu;
 import gc.com.gcmapapp.bean.ResultMsg;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -19,8 +21,9 @@ public interface ApiService {
     @POST("app/getMenu")
     Observable<ResultMsg<List<Menu>>> getMenu();
 
+    @FormUrlEncoded
     @POST("app/getMapInfo")
-    Observable<ResultMsg<List<MapResult>>> getMapInfo(@Query("jsonIds") String jsonIds);
+    Observable<ResultMsg<List<MapResult>>> getMapInfo(@Field("jsonIds") String jsonIds);
 
     @POST("app/getCoordinateInfo")
     Observable<ResultMsg<List<MapResult>>> getCoordinateInfo(@Query("coordinateId") String coordinateId);
