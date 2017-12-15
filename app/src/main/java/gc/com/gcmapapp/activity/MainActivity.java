@@ -1,10 +1,12 @@
 package gc.com.gcmapapp.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
-import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -12,34 +14,52 @@ import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.model.LatLng;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import gc.com.gcmapapp.R;
+import gc.com.gcmapapp.application.Constants;
 import gc.com.gcmapapp.bean.LocationInfo;
+import gc.com.gcmapapp.bean.Login;
+import gc.com.gcmapapp.bean.MapInfo;
+import gc.com.gcmapapp.bean.MapResult;
+import gc.com.gcmapapp.bean.Menu;
+import gc.com.gcmapapp.http.Api;
+import gc.com.gcmapapp.http.HttpUtil;
+import gc.com.gcmapapp.http.ProgressSubscriber;
 import gc.com.gcmapapp.utils.RegionParse;
+import gc.com.gcmapapp.utils.SharePreferenceUtil;
+import gc.com.gcmapapp.utils.ToastUtils;
 import mapapi.clusterutil.clustering.Cluster;
 import mapapi.clusterutil.clustering.ClusterItem;
 import mapapi.clusterutil.clustering.ClusterManager;
 
 
-public class MainActivity extends AppCompatActivity implements BaiduMap.OnMapLoadedCallback {
+public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCallback {
 
 
     @BindView(R.id.bmapView)
     MapView bmapView;
     BaiduMap mBaiduMap;
     MapStatus ms;
+    @BindView(R.id.memu)
+    Button memu;
+    @BindView(R.id.map_info)
+    Button mapInfo;
+    @BindView(R.id.coorinate_info)
+    Button coorinateInfo;
     private ClusterManager<MyItem> mClusterManager;
+    private List<Menu> menus;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         ms = new MapStatus.Builder().target(new LatLng(31.019261, 121.205807)).zoom(8).build();
@@ -61,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements BaiduMap.OnMapLoa
                 Toast.makeText(MainActivity.this,
                         "有" + cluster.getSize() + "个点", Toast.LENGTH_SHORT).show();
                 float zoom = mBaiduMap.getMapStatus().zoom;
-                if(zoom < 12)
+                if (zoom < 12)
                     zoom = 12;
                 ms = new MapStatus.Builder().target(cluster.getPosition()).zoom(zoom).build();
                 mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
@@ -153,12 +173,65 @@ public class MainActivity extends AppCompatActivity implements BaiduMap.OnMapLoa
         items.add(new MyItem(llG));
 
         List<LocationInfo> locationInfos = RegionParse.getRegionBean(this);
-        for(LocationInfo locationInfo: locationInfos){
+        for (LocationInfo locationInfo : locationInfos) {
             items.add(new MyItem(new LatLng(locationInfo.getLen(), locationInfo.getLat())));
         }
 
         mClusterManager.addItems(items);
 
+    }
+
+
+    @OnClick(R.id.memu)
+    public void getMenu(View view) {
+
+        HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getMenu(), new ProgressSubscriber<List<Menu>>(this) {
+            @Override
+            protected void _onNext(List<Menu> menus) {
+                ToastUtils.showMessage(context, menus.get(0).getChildren().get(0).getChildren().get(0).getMenuName());
+                MainActivity.this.menus = menus;
+            }
+
+            @Override
+            protected void _onError(String message) {
+
+            }
+        }, lifecycleSubject);
+    }
+
+    @OnClick(R.id.map_info)
+    public void getMapInfo(View view) {
+
+        MapInfo mapInfo = new MapInfo();
+        mapInfo.setProject_id(menus.get(0).getId());
+        List<MapInfo.SecondMap> secondMaps = new ArrayList<>();
+        for(Menu.SecondMenu secondMenu : menus.get(0).getChildren()){
+            MapInfo.SecondMap secondMap = new MapInfo.SecondMap();
+            secondMap.setAttribute_id(secondMenu.getId());
+            List<MapInfo.ThirdMap> thirdMaps = new ArrayList<>();
+            for(Menu.ThirdMenu thirdMenu : secondMenu.getChildren()){
+                MapInfo.ThirdMap  thirdMap = new MapInfo.ThirdMap();
+                thirdMap.setCondition_id(thirdMenu.getId());
+                thirdMaps.add(thirdMap);
+            }
+            secondMap.setConditions(thirdMaps);
+            secondMaps.add(secondMap);
+        }
+        mapInfo.setAttributes(secondMaps);
+        Gson gson = new Gson();
+        String jsonId = gson.toJson(mapInfo);
+
+        HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getMapInfo(jsonId), new ProgressSubscriber<List<MapResult>>(this) {
+            @Override
+            protected void _onNext(List<MapResult> mapResults) {
+                ToastUtils.showMessage(context, mapResults.get(0).getDetail_address());
+            }
+
+            @Override
+            protected void _onError(String message) {
+
+            }
+        }, lifecycleSubject);
     }
 
 

@@ -3,7 +3,7 @@ package gc.com.gcmapapp.bean;
 public class ResultMsg<T> {
     private String code;
     private String msg;
-    private T result;
+    private T data;
 
     public String getCode() {
         return code;
@@ -21,11 +21,11 @@ public class ResultMsg<T> {
         this.msg = msg;
     }
 
-    public T getResult() {
-        return result;
+    public T getData() {
+        return data;
     }
 
-    public void setResult(T result) {
-        this.result = result;
+    public void setData(T data) {
+        this.data = data;
     }
 }

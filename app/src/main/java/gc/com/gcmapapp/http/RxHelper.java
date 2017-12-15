@@ -60,10 +60,10 @@ public class RxHelper {
                     @Override
                     public Observable<T> call(ResultMsg<T> result) {
 
-                        if ("0000".equals(result.getCode())) {
-                            return createData(result.getResult());
+                        if ("0".equals(result.getCode())) {
+                            return createData(result.getData());
                         } else {
-                            return Observable.error(new ApiException(result.getCode()));
+                            return Observable.error(new ApiException(result.getMsg()));
                         }
                     }
                 }).takeUntil(compareLifecycleObservable).subscribeOn(Schedulers.io()).unsubscribeOn(Schedulers.io()).subscribeOn(AndroidSchedulers.mainThread()).observeOn(AndroidSchedulers.mainThread());

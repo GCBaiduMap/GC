@@ -13,4 +13,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="login_login">登&#160;&#160;录</string>
+    <string name="login_forget_pwd"><u>忘记密码</u></string>
+    <string name="login_register">注&#160;&#160;册</string>
 </resources>
