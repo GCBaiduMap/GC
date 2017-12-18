@@ -222,7 +222,6 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 
             @Override
             protected void _onError(String message) {
-
             }
         }, lifecycleSubject);
     }
@@ -284,6 +283,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 
     @OnClick(R.id.fab)
     public void showMenu(View view) {
+        dialogFrag.setMenus(menus);
         dialogFrag.show(getSupportFragmentManager(), dialogFrag.getTag());
     }
 
