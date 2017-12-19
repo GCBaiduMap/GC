@@ -1,5 +1,7 @@
 package gc.com.gcmapapp.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -48,6 +50,11 @@ public class LoginActivity extends BaseActivity {
 
     @OnClick(R.id.layout_login)
     public void login(View view) {
+        String host = (String) SharePreferenceUtil.get(getApplicationContext(), Constants.HOST, "");
+        if(TextUtils.isEmpty(host)){
+            setHost();
+            return;
+        }
         String userName = edtUsername.getText().toString();
         String password = edtPassword.getText().toString();
         if (TextUtils.isEmpty(userName)) {
@@ -72,6 +79,31 @@ public class LoginActivity extends BaseActivity {
                 ToastUtils.showMessage(context, message);
             }
         }, lifecycleSubject);
+    }
+
+    @OnClick(R.id.ib_setting)
+    public void setHost(){
+        final EditText editText = new EditText(context);
+        new AlertDialog.Builder(context)
+                .setTitle("请输入服务器地址")
+                .setView(editText)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String host  = editText.getText().toString();
+                        if(TextUtils.isEmpty(host)){
+                            ToastUtils.showMessage(context, "服务器地址不能为空");
+                            return;
+                        }
+                        if(!host.startsWith("http://")){
+                            host = "http://" + host ;
+                        }
+                         host = host + "/gismgr/";
+                        SharePreferenceUtil.put(getApplicationContext(), Constants.HOST, host);
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .show();
     }
 
 

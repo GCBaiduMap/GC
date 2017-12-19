@@ -1,9 +1,13 @@
 package gc.com.gcmapapp.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.allattentionhere.fabulousfilter.AAH_FabulousFragment;
@@ -24,6 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import gc.com.gcmapapp.Fragment.MyFabFragment;
 import gc.com.gcmapapp.R;
+import gc.com.gcmapapp.application.Constants;
 import gc.com.gcmapapp.bean.LocationInfo;
 import gc.com.gcmapapp.bean.MapInfo;
 import gc.com.gcmapapp.bean.MapResult;
@@ -32,6 +37,7 @@ import gc.com.gcmapapp.http.Api;
 import gc.com.gcmapapp.http.HttpUtil;
 import gc.com.gcmapapp.http.ProgressSubscriber;
 import gc.com.gcmapapp.utils.RegionParse;
+import gc.com.gcmapapp.utils.SharePreferenceUtil;
 import gc.com.gcmapapp.utils.ToastUtils;
 import mapapi.clusterutil.clustering.Cluster;
 import mapapi.clusterutil.clustering.ClusterItem;
@@ -45,12 +51,6 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     MapView bmapView;
     BaiduMap mBaiduMap;
     MapStatus ms;
-    @BindView(R.id.memu)
-    Button memu;
-    @BindView(R.id.map_info)
-    Button mapInfo;
-    @BindView(R.id.coorinate_info)
-    Button coorinateInfo;
     @BindView(R.id.fab)
     FloatingActionButton fab;
     private ClusterManager<MyItem> mClusterManager;
@@ -63,14 +63,14 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        ms = new MapStatus.Builder().target(new LatLng(31.019261, 121.205807)).zoom(8).build();
+
         mBaiduMap = bmapView.getMap();
         mBaiduMap.setOnMapLoadedCallback(this);
-        mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
+
         // 定义点聚合管理类ClusterManager
         mClusterManager = new ClusterManager<MyItem>(this, mBaiduMap);
         // 添加Marker点
-        addMarkers();
+        //addMarkers();
         // 设置地图监听，当地图状态发生改变时，进行点聚合运算
         mBaiduMap.setOnMapStatusChangeListener(mClusterManager);
         // 设置maker点击时的响应
@@ -101,6 +101,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         });
         dialogFrag = MyFabFragment.newInstance();
         dialogFrag.setParentFab(fab);
+        getMenu();
     }
 
 
@@ -181,43 +182,38 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     /**
      * 向地图添加Marker点
      */
-    public void addMarkers() {
-        // 添加Marker点
-        LatLng llA = new LatLng(39.963175, 116.400244);
-        LatLng llB = new LatLng(39.942821, 116.369199);
-        LatLng llC = new LatLng(39.939723, 116.425541);
-        LatLng llD = new LatLng(39.906965, 116.401394);
-        LatLng llE = new LatLng(39.956965, 116.331394);
-        LatLng llF = new LatLng(39.886965, 116.441394);
-        LatLng llG = new LatLng(39.996965, 116.411394);
+    public void addMarkers(List<MapResult> mapResults) {
+        if(mapResults != null && mapResults.size() >0){
+            // 添加Marker点
 
-        List<MyItem> items = new ArrayList<MyItem>();
-        items.add(new MyItem(llA));
-        items.add(new MyItem(llB));
-        items.add(new MyItem(llC));
-        items.add(new MyItem(llD));
-        items.add(new MyItem(llE));
-        items.add(new MyItem(llF));
-        items.add(new MyItem(llG));
+            List<MyItem> items = new ArrayList<MyItem>();
+            mClusterManager.clearItems();
 
-        List<LocationInfo> locationInfos = RegionParse.getRegionBean(this);
-        for (LocationInfo locationInfo : locationInfos) {
-            items.add(new MyItem(new LatLng(locationInfo.getLen(), locationInfo.getLat())));
+//            List<LocationInfo> locationInfos = RegionParse.getRegionBean(this);
+//            for (LocationInfo locationInfo : locationInfos) {
+//                items.add(new MyItem(new LatLng(locationInfo.getLen(), locationInfo.getLat())));
+//            }
+            for(MapResult mapResult : mapResults){
+                items.add(new MyItem(new LatLng(mapResult.getLatitude(), mapResult.getLongitude())));
+            }
+
+            mClusterManager.addItems(items);
+            ms = new MapStatus.Builder().target(new LatLng(31.23, 121.47)).zoom(10).build();
+            mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
         }
 
-        mClusterManager.addItems(items);
 
     }
 
 
-    @OnClick(R.id.memu)
-    public void getMenu(View view) {
-
+    public void getMenu() {
         HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getMenu(), new ProgressSubscriber<List<Menu>>(this) {
             @Override
             protected void _onNext(List<Menu> menus) {
-                ToastUtils.showMessage(context, menus.get(0).getChildren().get(0).getChildren().get(0).getMenuName());
                 MainActivity.this.menus = menus;
+                if(menus != null && menus.size() >0){
+                    getMapInfo();
+                }
             }
 
             @Override
@@ -226,8 +222,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         }, lifecycleSubject);
     }
 
-    @OnClick(R.id.map_info)
-    public void getMapInfo(View view) {
+    private String getJsonId( ){
         List<MapInfo> mapInfos = new ArrayList<>();
         MapInfo mapInfo = new MapInfo();
         mapInfo.setProject_id(menus.get(0).getId());
@@ -248,11 +243,16 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         mapInfos.add(mapInfo);
         Gson gson = new Gson();
         String jsonId = gson.toJson(mapInfos);
+        return jsonId;
 
-        HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getMapInfo(jsonId), new ProgressSubscriber<List<MapResult>>(this) {
+    }
+
+    public void getMapInfo() {
+
+        HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getMapInfo(getJsonId()), new ProgressSubscriber<List<MapResult>>(this) {
             @Override
             protected void _onNext(List<MapResult> mapResults) {
-                ToastUtils.showMessage(context, mapResults.get(0).getDetail_address());
+                addMarkers(mapResults);
             }
 
             @Override
@@ -263,7 +263,6 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     }
 
 
-    @OnClick(R.id.coorinate_info)
     public void getCoordinateInfo(View view) {
 
         HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getCoordinateInfo(""), new ProgressSubscriber<List<Menu>>(this) {
@@ -283,8 +282,15 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 
     @OnClick(R.id.fab)
     public void showMenu(View view) {
-        dialogFrag.setMenus(menus);
-        dialogFrag.show(getSupportFragmentManager(), dialogFrag.getTag());
+        if(menus != null){
+            dialogFrag.setMenus(menus);
+            dialogFrag.show(getSupportFragmentManager(), dialogFrag.getTag());
+        }
+    }
+
+    @OnClick(R.id.login_out)
+    public void setHost(){
+        finish();
     }
 
 
