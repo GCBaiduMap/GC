@@ -127,6 +127,7 @@ public class MyFabFragment extends AAH_FabulousFragment {
         tView = new AndroidTreeView(getActivity(), root);
         tView.setDefaultAnimation(true);
         tView.setUse2dScroll(true);
+        tView.setSelectionModeEnabled(true);
     }
 
     private void fillFolder(TreeNode folder) {

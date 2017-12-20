@@ -44,6 +44,7 @@
                 android:layout_margin="10dp"
                 android:background="@android:color/transparent"
                 android:layout_width="match_parent"
+                android:inputType="textPassword"
                 android:textColorHint="#a8ffffff"
                 android:textColor="#fff"
                 android:layout_height="wrap_content" />
@@ -90,6 +91,15 @@
         app:shake_max_duration="20000"
         app:shake_variance="500dp"
         />
+
+    <ImageButton
+        android:id="@+id/ib_setting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:layout_alignParentRight="true"
+        android:layout_margin="10dp"
+        android:src="@mipmap/ic_setting"/>
 
 
 </RelativeLayout>

@@ -13,32 +13,6 @@
         android:layout_height="fill_parent"
         android:clickable="true" />
     
-    <LinearLayout
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-
-
-    <Button
-        android:id="@+id/memu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="条件"/>
-
-        <Button
-            android:id="@+id/map_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="匹配详情"/>
-        <Button
-            android:id="@+id/coorinate_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="坐标详情"/>
-
-    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_margin="10dp"
