@@ -134,7 +134,10 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 
     @Override
     public void onResult(Object result) {
-
+       String jsonId = (String) result;
+        if(!TextUtils.isEmpty(jsonId)){
+            getMapInfo(jsonId);
+        }
     }
 
     @Override
@@ -212,7 +215,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
             protected void _onNext(List<Menu> menus) {
                 MainActivity.this.menus = menus;
                 if(menus != null && menus.size() >0){
-                    getMapInfo();
+                    getMapInfo(getJsonId());
                 }
             }
 
@@ -247,9 +250,9 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 
     }
 
-    public void getMapInfo() {
+    public void getMapInfo(String jsonId) {
 
-        HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getMapInfo(getJsonId()), new ProgressSubscriber<List<MapResult>>(this) {
+        HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getMapInfo(jsonId), new ProgressSubscriber<List<MapResult>>(this) {
             @Override
             protected void _onNext(List<MapResult> mapResults) {
                 addMarkers(mapResults);

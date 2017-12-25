@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.allattentionhere.fabulousfilter.AAH_FabulousFragment;
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.gson.Gson;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -27,11 +28,13 @@ import java.util.List;
 import java.util.Map;
 
 import gc.com.gcmapapp.R;
+import gc.com.gcmapapp.bean.MapInfo;
 import gc.com.gcmapapp.bean.Menu;
 import gc.com.gcmapapp.holder.IconTreeItemHolder;
 import gc.com.gcmapapp.holder.ProfileHolder;
 import gc.com.gcmapapp.holder.SelectableHeaderHolder;
 import gc.com.gcmapapp.holder.SelectableItemHolder;
+import gc.com.gcmapapp.utils.TreeUtils;
 
 
 /**
@@ -51,6 +54,7 @@ public class MyFabFragment extends AAH_FabulousFragment {
     ViewPager vpContainer;
     SectionsPagerAdapter mAdapter;
     private List<Menu> menus;
+    TreeNode root;
 
 
     public static MyFabFragment newInstance() {
@@ -82,7 +86,37 @@ public class MyFabFragment extends AAH_FabulousFragment {
         imgbtn_apply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                closeFilter(applied_filters);
+//                closeFilter(applied_filters);
+                List<MapInfo> mapInfos = new ArrayList<>();
+                for(TreeNode firstTreeNode : root.getChildren()){
+                    if(TreeUtils.isSelected(firstTreeNode)){
+                        MapInfo firstMapInfo = new MapInfo();
+                        firstMapInfo.setProject_id(((IconTreeItemHolder.IconTreeItem)firstTreeNode.getValue()).id);
+                        List<MapInfo.SecondMap> secondMaps = new ArrayList<>();
+                        for(TreeNode secondTreeNode: firstTreeNode.getChildren()){
+                            if(TreeUtils.isSelected(secondTreeNode)){
+                                MapInfo.SecondMap secondMapInfo = new MapInfo.SecondMap();
+                                secondMapInfo.setAttribute_id(((IconTreeItemHolder.IconTreeItem)secondTreeNode.getValue()).id);
+                                List<MapInfo.ThirdMap> thirdMaps = new ArrayList<>();
+                                for(TreeNode thirdTreeNode: secondTreeNode.getChildren()){
+                                    if(thirdTreeNode.isSelected()) {
+                                        MapInfo.ThirdMap thirdMap = new MapInfo.ThirdMap();
+                                        thirdMap.setCondition_id(((IconTreeItemHolder.IconTreeItem) thirdTreeNode.getValue()).id);
+                                        thirdMaps.add(thirdMap);
+                                    }
+                                }
+                                secondMapInfo.setConditions(thirdMaps);
+                                secondMaps.add(secondMapInfo);
+                            }
+                        }
+                        firstMapInfo.setAttributes(secondMaps);
+                        mapInfos.add(firstMapInfo);
+                    }
+
+                }
+                Gson gson = new Gson();
+                String jsonId = gson.toJson(mapInfos);
+                closeFilter(jsonId);
             }
         });
         imgbtn_refresh.setOnClickListener(new View.OnClickListener() {
@@ -111,13 +145,13 @@ public class MyFabFragment extends AAH_FabulousFragment {
     }
 
     private void iniMenu(){
-        TreeNode root = TreeNode.root();
+        root = TreeNode.root();
         for(Menu menu: menus){
-            TreeNode firstMemuNode = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_sd_storage, menu.getMenuName())).setViewHolder(new ProfileHolder(getActivity()));
+            TreeNode firstMemuNode = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_sd_storage, menu.getMenuName(), menu.getId())).setViewHolder(new ProfileHolder(getActivity()));
             for(Menu.SecondMenu secondMenu : menu.getChildren()){
-                TreeNode secondMemuNode = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder, secondMenu.getMenuName())).setViewHolder(new SelectableHeaderHolder(getActivity()));
+                TreeNode secondMemuNode = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder, secondMenu.getMenuName(), secondMenu.getId())).setViewHolder(new SelectableHeaderHolder(getActivity()));
                 for(Menu.ThirdMenu thirdMenu : secondMenu.getChildren()){
-                    TreeNode thirdMemuNode = new TreeNode(thirdMenu.getMenuName()).setViewHolder(new SelectableItemHolder(getActivity()));
+                    TreeNode thirdMemuNode = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder, thirdMenu.getMenuName(), thirdMenu.getId())).setViewHolder(new SelectableItemHolder(getActivity()));
                     secondMemuNode.addChild(thirdMemuNode);
                 }
                 firstMemuNode.addChild(secondMemuNode);

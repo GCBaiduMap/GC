@@ -8,8 +8,17 @@
     android:layout_height="match_parent">
 
 
-    <com.github.johnkil.print.PrintView
+    <CheckBox
+        android:visibility="visible"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentLeft="true"
+        android:id="@+id/node_selector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.github.johnkil.print.PrintView
+        android:layout_toRightOf="@id/node_selector"
         android:id="@+id/icon"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
