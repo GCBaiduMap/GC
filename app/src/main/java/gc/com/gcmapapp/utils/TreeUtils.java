@@ -30,6 +30,7 @@ public class TreeUtils {
     public static void setChildrenNode(boolean isChecked, TreeNode n, AndroidTreeView treeView) {
         for(TreeNode treeNode : n.getChildren()){
             treeView.selectNode(treeNode, isChecked);
+            setChildrenNode(isChecked, treeNode, treeView);
         }
     }
 
