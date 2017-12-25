@@ -11,6 +11,7 @@ import com.github.johnkil.print.PrintView;
 import com.unnamed.b.atv.model.TreeNode;
 
 import gc.com.gcmapapp.R;
+import gc.com.gcmapapp.utils.TreeUtils;
 
 /**
  * Created by Bogdan Melnychuk on 2/15/15.
@@ -41,13 +42,23 @@ public class SelectableHeaderHolder extends TreeNode.BaseNodeViewHolder<IconTree
         }
 
         nodeSelector = (CheckBox) view.findViewById(R.id.node_selector);
+        nodeSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean isChecked = nodeSelector.isChecked();
+                node.setSelected(isChecked);
+                nodeSelector.setChecked(isChecked);
+//                for (TreeNode n : node.getChildren()) {
+//                    getTreeView().selectNode(n, isChecked);
+//                }
+                TreeUtils.setChildrenNode(isChecked, node, getTreeView());
+                TreeUtils.setParentNode(isChecked, node, getTreeView());
+            }
+        });
         nodeSelector.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                node.setSelected(isChecked);
-                for (TreeNode n : node.getChildren()) {
-                    getTreeView().selectNode(n, isChecked);
-                }
+
             }
         });
         nodeSelector.setChecked(node.isSelected());
