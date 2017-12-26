@@ -2,6 +2,7 @@ package gc.com.gcmapapp.http;
 
 import java.util.List;
 
+import gc.com.gcmapapp.bean.CoordinationInfo;
 import gc.com.gcmapapp.bean.Login;
 import gc.com.gcmapapp.bean.MapResult;
 import gc.com.gcmapapp.bean.Menu;
@@ -26,6 +27,6 @@ public interface ApiService {
     Observable<ResultMsg<List<MapResult>>> getMapInfo(@Field("jsonIds") String jsonIds);
 
     @POST("app/getCoordinateInfo")
-    Observable<ResultMsg<List<MapResult>>> getCoordinateInfo(@Query("coordinateId") String coordinateId);
+    Observable<ResultMsg<List<CoordinationInfo>>> getCoordinateInfo(@Query("coordinateId") String coordinateId);
 
 }

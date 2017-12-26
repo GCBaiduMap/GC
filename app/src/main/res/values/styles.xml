@@ -30,4 +30,15 @@
         <!--<item name="android:divider">@android:drawable/divider_horizontal_bright</item>-->
     </style>
 
+    <style name="CoordinationInfoDialogTheme" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:background">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowBackground"> @android:color/transparent</item>
+    </style>
+
 </resources>
