@@ -12,4 +12,6 @@
     <color name="filters_buttons">#5490D5</color>
     <color name="filters_buttons_selected">#5490D5</color>
     <color name="text_gray">#323232</color>
+    <color name="grey">#6B6666</color>
+    <color name="black">#000000</color>
 </resources>

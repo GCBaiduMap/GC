@@ -33,14 +33,14 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        lifecycleSubject.onNext(ActivityLifeCycleEvent.STOP);
+        //lifecycleSubject.onNext(ActivityLifeCycleEvent.STOP);
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        lifecycleSubject.onNext(ActivityLifeCycleEvent.DESTROY);
+        //lifecycleSubject.onNext(ActivityLifeCycleEvent.DESTROY);
     }
 
 

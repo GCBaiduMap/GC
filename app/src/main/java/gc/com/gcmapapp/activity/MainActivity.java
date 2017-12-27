@@ -4,8 +4,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -18,6 +22,20 @@ import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.CityInfo;
+import com.baidu.mapapi.search.core.PoiInfo;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.poi.OnGetPoiSearchResultListener;
+import com.baidu.mapapi.search.poi.PoiCitySearchOption;
+import com.baidu.mapapi.search.poi.PoiDetailResult;
+import com.baidu.mapapi.search.poi.PoiDetailSearchOption;
+import com.baidu.mapapi.search.poi.PoiIndoorResult;
+import com.baidu.mapapi.search.poi.PoiResult;
+import com.baidu.mapapi.search.poi.PoiSearch;
+import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
+import com.baidu.mapapi.search.sug.SuggestionResult;
+import com.baidu.mapapi.search.sug.SuggestionSearch;
+import com.baidu.mapapi.search.sug.SuggestionSearchOption;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -29,6 +47,7 @@ import butterknife.OnClick;
 import gc.com.gcmapapp.Fragment.MyFabFragment;
 import gc.com.gcmapapp.R;
 import gc.com.gcmapapp.application.Constants;
+import gc.com.gcmapapp.bean.CoordinationInfo;
 import gc.com.gcmapapp.bean.LocationInfo;
 import gc.com.gcmapapp.bean.MapInfo;
 import gc.com.gcmapapp.bean.MapResult;
@@ -39,12 +58,14 @@ import gc.com.gcmapapp.http.ProgressSubscriber;
 import gc.com.gcmapapp.utils.RegionParse;
 import gc.com.gcmapapp.utils.SharePreferenceUtil;
 import gc.com.gcmapapp.utils.ToastUtils;
+import gc.com.gcmapapp.view.ShowCoordinateInfoDialog;
 import mapapi.clusterutil.clustering.Cluster;
 import mapapi.clusterutil.clustering.ClusterItem;
 import mapapi.clusterutil.clustering.ClusterManager;
+import mapapi.overlayutil.PoiOverlay;
 
 
-public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCallback , AAH_FabulousFragment.Callbacks,AAH_FabulousFragment.AnimationListener{
+public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCallback , AAH_FabulousFragment.Callbacks,AAH_FabulousFragment.AnimationListener, OnGetSuggestionResultListener, OnGetPoiSearchResultListener {
 
 
     @BindView(R.id.bmapView)
@@ -53,9 +74,15 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     MapStatus ms;
     @BindView(R.id.fab)
     FloatingActionButton fab;
+    @BindView(R.id.search_key)
+    AutoCompleteTextView searchKey;
     private ClusterManager<MyItem> mClusterManager;
     private List<Menu> menus;
     MyFabFragment dialogFrag;
+    private SuggestionSearch mSuggestionSearch = null;
+    private PoiSearch mPoiSearch = null;
+    private List<String> suggest;
+    private ArrayAdapter<String> sugAdapter = null;
 
 
     @Override
@@ -64,6 +91,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        iniView();
         mBaiduMap = bmapView.getMap();
         mBaiduMap.setOnMapLoadedCallback(this);
 
@@ -93,8 +121,9 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MyItem>() {
             @Override
             public boolean onClusterItemClick(MyItem item) {
-                Toast.makeText(MainActivity.this,
-                        "点击单个Item", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this,
+//                        "点击单个Item", Toast.LENGTH_SHORT).show();
+                getCoordinateInfo(item.id);
 
                 return false;
             }
@@ -102,6 +131,46 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         dialogFrag = MyFabFragment.newInstance();
         dialogFrag.setParentFab(fab);
         getMenu();
+    }
+
+    private void iniView(){
+        /**
+         * 当输入关键字变化时，动态更新建议列表
+         */
+        searchKey.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1,
+                                          int arg2, int arg3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence cs, int arg1, int arg2,
+                                      int arg3) {
+                if (cs.length() <= 0) {
+                    return;
+                }
+
+                /**
+                 * 使用建议搜索服务获取建议列表，结果在onSuggestionResult()中更新
+                 */
+                mSuggestionSearch
+                        .requestSuggestion((new SuggestionSearchOption())
+                                .keyword(cs.toString()).city("上海"));
+            }
+        });
+        // 初始化建议搜索模块，注册建议搜索事件监听
+        mSuggestionSearch = SuggestionSearch.newInstance();
+        mSuggestionSearch.setOnGetSuggestionResultListener(this);
+        // 初始化搜索模块，注册搜索事件监听
+        mPoiSearch = PoiSearch.newInstance();
+        mPoiSearch.setOnGetPoiSearchResultListener(this);
     }
 
 
@@ -160,14 +229,82 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 
     }
 
+    @Override
+    public void onGetSuggestionResult(SuggestionResult res) {
+        if (res == null || res.getAllSuggestions() == null) {
+            return;
+        }
+        suggest = new ArrayList<String>();
+        for (SuggestionResult.SuggestionInfo info : res.getAllSuggestions()) {
+            if (info.key != null) {
+                suggest.add(info.key);
+            }
+        }
+        sugAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, suggest);
+        searchKey.setAdapter(sugAdapter);
+        sugAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onGetPoiResult(PoiResult result) {
+        if (result == null || result.error == SearchResult.ERRORNO.RESULT_NOT_FOUND) {
+            ToastUtils.showMessage(context, "未找到结果");
+            return;
+        }
+        if (result.error == SearchResult.ERRORNO.NO_ERROR) {
+            mBaiduMap.clear();
+            PoiOverlay overlay = new MyPoiOverlay(mBaiduMap);
+            mBaiduMap.setOnMarkerClickListener(overlay);
+            overlay.setData(result);
+            overlay.addToMap();
+            overlay.zoomToSpan();
+            return;
+        }
+        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_KEYWORD) {
+
+            ToastUtils.showMessage(context, "未找到结果");
+            return;
+        }
+    }
+
+    @Override
+    public void onGetPoiDetailResult(PoiDetailResult poiDetailResult) {
+
+    }
+
+    @Override
+    public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult) {
+
+    }
+
+    private class MyPoiOverlay extends PoiOverlay {
+
+        public MyPoiOverlay(BaiduMap baiduMap) {
+            super(baiduMap);
+        }
+
+        @Override
+        public boolean onPoiClick(int index) {
+            super.onPoiClick(index);
+            PoiInfo poi = getPoiResult().getAllPoi().get(index);
+            // if (poi.hasCaterDetails) {
+            mPoiSearch.searchPoiDetail((new PoiDetailSearchOption())
+                    .poiUid(poi.uid));
+            // }
+            return true;
+        }
+    }
+
     /**
      * 每个Marker点，包含Marker点坐标以及图标
      */
     public class MyItem implements ClusterItem {
         private final LatLng mPosition;
+        private String id;
 
-        public MyItem(LatLng latLng) {
+        public MyItem(LatLng latLng, String id) {
             mPosition = latLng;
+            this.id = id;
         }
 
         @Override
@@ -197,7 +334,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 //                items.add(new MyItem(new LatLng(locationInfo.getLen(), locationInfo.getLat())));
 //            }
             for(MapResult mapResult : mapResults){
-                items.add(new MyItem(new LatLng(mapResult.getLatitude(), mapResult.getLongitude())));
+                items.add(new MyItem(new LatLng(mapResult.getLatitude(), mapResult.getLongitude()), mapResult.getId()));
             }
 
             mClusterManager.addItems(items);
@@ -266,13 +403,14 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     }
 
 
-    public void getCoordinateInfo(View view) {
+    public void getCoordinateInfo(String coordinateId) {
 
-        HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getCoordinateInfo(""), new ProgressSubscriber<List<Menu>>(this) {
+        HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getCoordinateInfo(coordinateId), new ProgressSubscriber<List<CoordinationInfo>>(this) {
             @Override
-            protected void _onNext(List<Menu> menus) {
-                ToastUtils.showMessage(context, menus.get(0).getChildren().get(0).getChildren().get(0).getMenuName());
-                MainActivity.this.menus = menus;
+            protected void _onNext(List<CoordinationInfo> coordinationInfos) {
+                ShowCoordinateInfoDialog dialog = ShowCoordinateInfoDialog.createDialog(context);
+                dialog.setCoordinations(coordinationInfos);
+                dialog.show();
             }
 
             @Override
@@ -294,6 +432,13 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     @OnClick(R.id.login_out)
     public void setHost(){
         finish();
+    }
+
+    @OnClick(R.id.btn_search)
+    public void search(View v){
+        String keystr = searchKey.getText().toString();
+        mPoiSearch.searchInCity((new PoiCitySearchOption())
+                .city("上海").keyword(keystr).pageNum(0));
     }
 
 
