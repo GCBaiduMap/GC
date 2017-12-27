@@ -1,30 +1,36 @@
 package gc.com.gcmapapp.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
 
 import gc.com.gcmapapp.R;
 import gc.com.gcmapapp.bean.CoordinationInfo;
+import gc.com.gcmapapp.http.Url;
+import gc.com.gcmapapp.utils.ImageLoaderUtil;
 
 
 public class CoordinationAdapter extends BaseAdapter {
     private Context mContext;
     private List<CoordinationInfo> coordinationInfos;
     private LayoutInflater mLayoutInflater;
-    private int mSelected = -1;
-    private int mSelectedColor;
-    private int type;
+    ImageLoaderUtil imageLoaderUtil ;
 
     public CoordinationAdapter(Context context, List<CoordinationInfo> coordinationInfos) {
         this.mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         this.coordinationInfos = coordinationInfos;
+         imageLoaderUtil = new ImageLoaderUtil();
     }
 
 
@@ -58,6 +64,7 @@ public class CoordinationAdapter extends BaseAdapter {
             holder.checkTimeTv = (TextView) view.findViewById(R.id.check_time_tv);
             holder.imgUrlTv = (TextView) view.findViewById(R.id.img_url_tv);
             holder.divider = view.findViewById(R.id.divider);
+            holder.imgIv = view.findViewById(R.id.img_iv);
             view.setTag(holder);
         } else {
             holder = (Holder) view.getTag();
@@ -66,6 +73,14 @@ public class CoordinationAdapter extends BaseAdapter {
         holder.researchNumberTv.setText(coordinationInfos.get(position).getResearch_number());
         holder.checkTimeTv.setText(coordinationInfos.get(position).getCheck_time());
         holder.imgUrlTv.setText(coordinationInfos.get(position).getImg_url());
+        if (!TextUtils.isEmpty(coordinationInfos.get(position).getId())) {
+            String url = mContext.getString(R.string.img_url, Url.BASE_URL,  coordinationInfos.get(position).getId());
+            Log.i("Coordination", "url:" + url);
+            imageLoaderUtil.displayImage(url, holder.imgIv, ImageLoader.getInstance());
+        } else {
+            holder.imgIv
+                    .setImageResource(R.mipmap.ic_default);
+        }
         if (position == coordinationInfos.size() - 1) {
             holder.divider.setVisibility(View.GONE);
         } else {
@@ -81,5 +96,6 @@ public class CoordinationAdapter extends BaseAdapter {
         private TextView checkTimeTv;
         private TextView imgUrlTv;
         private View divider;
+        private ImageView imgIv;
     }
 }

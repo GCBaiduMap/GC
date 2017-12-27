@@ -20,6 +20,7 @@ import gc.com.gcmapapp.bean.Login;
 import gc.com.gcmapapp.http.Api;
 import gc.com.gcmapapp.http.HttpUtil;
 import gc.com.gcmapapp.http.ProgressSubscriber;
+import gc.com.gcmapapp.http.Url;
 import gc.com.gcmapapp.utils.SharePreferenceUtil;
 import gc.com.gcmapapp.utils.ToastUtils;
 
@@ -84,6 +85,7 @@ public class LoginActivity extends BaseActivity {
     @OnClick(R.id.ib_setting)
     public void setHost(){
         final EditText editText = new EditText(context);
+        editText.setText((String) SharePreferenceUtil.get(getApplicationContext(), Constants.HOST, ""));
         new AlertDialog.Builder(context)
                 .setTitle("请输入服务器地址")
                 .setView(editText)
@@ -98,8 +100,8 @@ public class LoginActivity extends BaseActivity {
                         if(!host.startsWith("http://")){
                             host = "http://" + host ;
                         }
-                         host = host + "/gismgr/";
                         SharePreferenceUtil.put(getApplicationContext(), Constants.HOST, host);
+                        Url.BASE_URL = context.getString(R.string.base_url, host);
                     }
                 })
                 .setNegativeButton("取消", null)

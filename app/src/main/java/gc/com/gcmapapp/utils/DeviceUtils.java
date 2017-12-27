@@ -7,6 +7,8 @@ import android.provider.Settings;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import gc.com.gcmapapp.http.Url;
+
 /**
  * Created by jiguijun on 2017/12/14.
  */
@@ -46,4 +48,5 @@ public class DeviceUtils {
         //返回整个结果
         return sb.toString();
     }
+
 }

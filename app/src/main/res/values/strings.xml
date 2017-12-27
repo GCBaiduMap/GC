@@ -26,4 +26,6 @@
     <string name="ic_check_circle_blank">&#xe03e;</string>
     <string name="ic_add">&#xe006;</string>
     <string name="ic_close">&#xe048;</string>
+    <string name="img_url">%1$s/app/getImgBydetailId?id=%2$s</string>
+    <string name="base_url">%1$s/gismgr/</string>
 </resources>

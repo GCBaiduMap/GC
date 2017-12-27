@@ -48,7 +48,7 @@ public class MyFabFragment extends AAH_FabulousFragment {
     List<TextView> textviews = new ArrayList<>();
 
 
-    ImageButton imgbtn_refresh, imgbtn_apply;
+    ImageButton  imgbtn_apply;
     private AndroidTreeView tView;
     private RelativeLayout containerView;
     ViewPager vpContainer;
@@ -75,7 +75,6 @@ public class MyFabFragment extends AAH_FabulousFragment {
 
         RelativeLayout rl_content = (RelativeLayout) contentView.findViewById(R.id.rl_content);
         LinearLayout ll_buttons = (LinearLayout) contentView.findViewById(R.id.ll_buttons);
-        imgbtn_refresh = (ImageButton) contentView.findViewById(R.id.imgbtn_refresh);
         imgbtn_apply = (ImageButton) contentView.findViewById(R.id.imgbtn_apply);
         vpContainer = contentView.findViewById(R.id.vp_container);
         mAdapter = new SectionsPagerAdapter();
@@ -117,17 +116,6 @@ public class MyFabFragment extends AAH_FabulousFragment {
                 Gson gson = new Gson();
                 String jsonId = gson.toJson(mapInfos);
                 closeFilter(jsonId);
-            }
-        });
-        imgbtn_refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                for (TextView tv : textviews) {
-//                    tv.setTag("unselected");
-//                    tv.setBackgroundResource(R.drawable.chip_unselected);
-//                    tv.setTextColor(ContextCompat.getColor(getContext(), R.color.filters_chips));
-//                }
-//                applied_filters.clear();
             }
         });
 

@@ -39,7 +39,8 @@ public class TreeUtils {
             return true;
         }else {
             for(TreeNode child : node.getChildren()){
-                return isSelected(child);
+                 if(isSelected(child))
+                     return true;
             }
         }
         return false;

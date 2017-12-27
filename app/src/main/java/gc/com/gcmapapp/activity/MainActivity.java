@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -204,6 +205,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     @Override
     public void onResult(Object result) {
        String jsonId = (String) result;
+        Log.i("MainActivity", "onResult jsonId:" + jsonId);
         if(!TextUtils.isEmpty(jsonId)){
             getMapInfo(jsonId);
         }
@@ -329,6 +331,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
             List<MyItem> items = new ArrayList<MyItem>();
             mClusterManager.clearItems();
 
+
 //            List<LocationInfo> locationInfos = RegionParse.getRegionBean(this);
 //            for (LocationInfo locationInfo : locationInfos) {
 //                items.add(new MyItem(new LatLng(locationInfo.getLen(), locationInfo.getLat())));
@@ -392,6 +395,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getMapInfo(jsonId), new ProgressSubscriber<List<MapResult>>(this) {
             @Override
             protected void _onNext(List<MapResult> mapResults) {
+                mBaiduMap.clear();
                 addMarkers(mapResults);
             }
 

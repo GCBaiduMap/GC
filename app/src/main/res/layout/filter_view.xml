@@ -32,25 +32,16 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:orientation="horizontal"
-            android:weightSum="2">
+            android:gravity="center"
+            >
 
             <ImageButton
-                android:background="@drawable/states_fab_button"
-                android:id="@+id/imgbtn_refresh"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/refresh"
-                android:tint="@android:color/white" />
-
-            <ImageButton
-                android:background="@drawable/states_fab_button"
                 android:id="@+id/imgbtn_apply"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/done"
-                android:tint="@android:color/white" />
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@null"
+                android:src="@mipmap/ic_complete"
+                />
 
         </LinearLayout>
 
