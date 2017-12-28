@@ -4,15 +4,21 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.allattentionhere.fabulousfilter.AAH_FabulousFragment;
@@ -38,6 +44,9 @@ import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
 import com.google.gson.Gson;
+import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,12 +62,17 @@ import gc.com.gcmapapp.bean.LocationInfo;
 import gc.com.gcmapapp.bean.MapInfo;
 import gc.com.gcmapapp.bean.MapResult;
 import gc.com.gcmapapp.bean.Menu;
+import gc.com.gcmapapp.holder.IconTreeItemHolder;
+import gc.com.gcmapapp.holder.ProfileHolder;
+import gc.com.gcmapapp.holder.SelectableHeaderHolder;
+import gc.com.gcmapapp.holder.SelectableItemHolder;
 import gc.com.gcmapapp.http.Api;
 import gc.com.gcmapapp.http.HttpUtil;
 import gc.com.gcmapapp.http.ProgressSubscriber;
 import gc.com.gcmapapp.utils.RegionParse;
 import gc.com.gcmapapp.utils.SharePreferenceUtil;
 import gc.com.gcmapapp.utils.ToastUtils;
+import gc.com.gcmapapp.utils.TreeUtils;
 import gc.com.gcmapapp.view.ShowCoordinateInfoDialog;
 import mapapi.clusterutil.clustering.Cluster;
 import mapapi.clusterutil.clustering.ClusterItem;
@@ -66,24 +80,29 @@ import mapapi.clusterutil.clustering.ClusterManager;
 import mapapi.overlayutil.PoiOverlay;
 
 
-public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCallback , AAH_FabulousFragment.Callbacks,AAH_FabulousFragment.AnimationListener, OnGetSuggestionResultListener, OnGetPoiSearchResultListener {
+public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCallback , AAH_FabulousFragment.Callbacks,AAH_FabulousFragment.AnimationListener, OnGetSuggestionResultListener, OnGetPoiSearchResultListener, MaterialSearchBar.OnSearchActionListener {
 
 
     @BindView(R.id.bmapView)
     MapView bmapView;
+    @BindView(R.id.searchBar)
+    MaterialSearchBar searchBar;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawer;
+    @BindView(R.id.menu_container)
+    RelativeLayout menuContainer;
+    @BindView(R.id.imgbtn_apply)
+    ImageButton imgbtnApply;
     BaiduMap mBaiduMap;
     MapStatus ms;
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
-    @BindView(R.id.search_key)
-    AutoCompleteTextView searchKey;
     private ClusterManager<MyItem> mClusterManager;
     private List<Menu> menus;
-    MyFabFragment dialogFrag;
     private SuggestionSearch mSuggestionSearch = null;
     private PoiSearch mPoiSearch = null;
     private List<String> suggest;
     private ArrayAdapter<String> sugAdapter = null;
+    TreeNode root;
+    private AndroidTreeView tView;
 
 
     @Override
@@ -129,8 +148,6 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
                 return false;
             }
         });
-        dialogFrag = MyFabFragment.newInstance();
-        dialogFrag.setParentFab(fab);
         getMenu();
     }
 
@@ -138,23 +155,50 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         /**
          * 当输入关键字变化时，动态更新建议列表
          */
-        searchKey.addTextChangedListener(new TextWatcher() {
-
+//        searchKey.addTextChangedListener(new TextWatcher() {
+//
+//            @Override
+//            public void afterTextChanged(Editable arg0) {
+//
+//            }
+//
+//            @Override
+//            public void beforeTextChanged(CharSequence arg0, int arg1,
+//                                          int arg2, int arg3) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence cs, int arg1, int arg2,
+//                                      int arg3) {
+//                if (cs.length() <= 0) {
+//                    return;
+//                }
+//
+//                /**
+//                 * 使用建议搜索服务获取建议列表，结果在onSuggestionResult()中更新
+//                 */
+//                mSuggestionSearch
+//                        .requestSuggestion((new SuggestionSearchOption())
+//                                .keyword(cs.toString()).city("上海"));
+//            }
+//        });
+        searchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
+        CardView cardView = searchBar.findViewById(R.id.mt_container);
+        cardView.setRadius(0);
+        searchBar.setOnSearchActionListener(this);
+        searchBar.inflateMenu(R.menu.main);
+        searchBar.setText("");
+        Log.d("LOG_TAG", getClass().getSimpleName() + ": text " + searchBar.getText());
+        searchBar.setCardViewElevation(10);
+        searchBar.addTextChangeListener(new TextWatcher() {
             @Override
-            public void afterTextChanged(Editable arg0) {
-
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
 
             @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1,
-                                          int arg2, int arg3) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence cs, int arg1, int arg2,
-                                      int arg3) {
-                if (cs.length() <= 0) {
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() <= 0) {
                     return;
                 }
 
@@ -163,8 +207,14 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
                  */
                 mSuggestionSearch
                         .requestSuggestion((new SuggestionSearchOption())
-                                .keyword(cs.toString()).city("上海"));
+                                .keyword(charSequence.toString()).city("上海"));
             }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+
         });
         // 初始化建议搜索模块，注册建议搜索事件监听
         mSuggestionSearch = SuggestionSearch.newInstance();
@@ -172,6 +222,16 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         // 初始化搜索模块，注册搜索事件监听
         mPoiSearch = PoiSearch.newInstance();
         mPoiSearch.setOnGetPoiSearchResultListener(this);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
 
@@ -211,6 +271,43 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         }
     }
 
+    @OnClick(R.id.imgbtn_apply)
+    public void getMapInfo(View view){
+        drawer.closeDrawer(GravityCompat.START);
+        List<MapInfo> mapInfos = new ArrayList<>();
+        for(TreeNode firstTreeNode : root.getChildren()){
+            if(TreeUtils.isSelected(firstTreeNode)){
+                MapInfo firstMapInfo = new MapInfo();
+                firstMapInfo.setProject_id(((IconTreeItemHolder.IconTreeItem)firstTreeNode.getValue()).id);
+                List<MapInfo.SecondMap> secondMaps = new ArrayList<>();
+                for(TreeNode secondTreeNode: firstTreeNode.getChildren()){
+                    if(TreeUtils.isSelected(secondTreeNode)){
+                        MapInfo.SecondMap secondMapInfo = new MapInfo.SecondMap();
+                        secondMapInfo.setAttribute_id(((IconTreeItemHolder.IconTreeItem)secondTreeNode.getValue()).id);
+                        List<MapInfo.ThirdMap> thirdMaps = new ArrayList<>();
+                        for(TreeNode thirdTreeNode: secondTreeNode.getChildren()){
+                            if(thirdTreeNode.isSelected()) {
+                                MapInfo.ThirdMap thirdMap = new MapInfo.ThirdMap();
+                                thirdMap.setCondition_id(((IconTreeItemHolder.IconTreeItem) thirdTreeNode.getValue()).id);
+                                thirdMaps.add(thirdMap);
+                            }
+                        }
+                        secondMapInfo.setConditions(thirdMaps);
+                        secondMaps.add(secondMapInfo);
+                    }
+                }
+                firstMapInfo.setAttributes(secondMaps);
+                mapInfos.add(firstMapInfo);
+            }
+
+        }
+        Gson gson = new Gson();
+        String jsonId = gson.toJson(mapInfos);
+        if(!TextUtils.isEmpty(jsonId)){
+            getMapInfo(jsonId);
+        }
+    }
+
     @Override
     public void onOpenAnimationStart() {
 
@@ -242,9 +339,9 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
                 suggest.add(info.key);
             }
         }
-        sugAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, suggest);
-        searchKey.setAdapter(sugAdapter);
-        sugAdapter.notifyDataSetChanged();
+//        sugAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, suggest);
+//        searchKey.setAdapter(sugAdapter);
+//        sugAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -277,6 +374,33 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     @Override
     public void onGetPoiIndoorResult(PoiIndoorResult poiIndoorResult) {
 
+    }
+
+    @Override
+    public void onSearchStateChanged(boolean enabled) {
+
+    }
+
+    @Override
+    public void onSearchConfirmed(CharSequence text) {
+
+    }
+
+    @Override
+    public void onButtonClicked(int buttonCode) {
+        switch (buttonCode){
+            case MaterialSearchBar.BUTTON_NAVIGATION:
+                drawer.openDrawer(Gravity.LEFT);
+                break;
+            case MaterialSearchBar.BUTTON_SPEECH:
+                String keystr = searchBar.getText().toString();
+                mPoiSearch.searchInCity((new PoiCitySearchOption())
+                        .city("上海").keyword(keystr).pageNum(0));
+                break;
+            case MaterialSearchBar.BUTTON_BACK:
+                searchBar.disableSearch();
+                break;
+        }
     }
 
     private class MyPoiOverlay extends PoiOverlay {
@@ -354,6 +478,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
             @Override
             protected void _onNext(List<Menu> menus) {
                 MainActivity.this.menus = menus;
+                iniMenu();
                 if(menus != null && menus.size() >0){
                     getMapInfo(getJsonId());
                 }
@@ -425,25 +550,38 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     }
 
 
-    @OnClick(R.id.fab)
-    public void showMenu(View view) {
-        if(menus != null){
-            dialogFrag.setMenus(menus);
-            dialogFrag.show(getSupportFragmentManager(), dialogFrag.getTag());
+
+
+//    @OnClick(R.id.btn_search)
+//    public void search(View v){
+//        String keystr = searchKey.getText().toString();
+//        mPoiSearch.searchInCity((new PoiCitySearchOption())
+//                .city("上海").keyword(keystr).pageNum(0));
+//    }
+
+
+    private void iniMenu(){
+        root = TreeNode.root();
+        for(Menu menu: menus){
+            TreeNode firstMemuNode = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_sd_storage, menu.getMenuName(), menu.getId())).setViewHolder(new ProfileHolder(context));
+            for(Menu.SecondMenu secondMenu : menu.getChildren()){
+                TreeNode secondMemuNode = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder, secondMenu.getMenuName(), secondMenu.getId())).setViewHolder(new SelectableHeaderHolder(context));
+                for(Menu.ThirdMenu thirdMenu : secondMenu.getChildren()){
+                    TreeNode thirdMemuNode = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder, thirdMenu.getMenuName(), thirdMenu.getId())).setViewHolder(new SelectableItemHolder(context));
+                    secondMemuNode.addChild(thirdMemuNode);
+                }
+                firstMemuNode.addChild(secondMemuNode);
+            }
+            root.addChildren(firstMemuNode);
         }
+        tView = new AndroidTreeView(context, root);
+        tView.setDefaultAnimation(true);
+        tView.setUse2dScroll(true);
+        tView.setSelectionModeEnabled(true);
+        menuContainer.addView(tView.getView());
     }
 
-    @OnClick(R.id.login_out)
-    public void setHost(){
-        finish();
-    }
 
-    @OnClick(R.id.btn_search)
-    public void search(View v){
-        String keystr = searchKey.getText().toString();
-        mPoiSearch.searchInCity((new PoiCitySearchOption())
-                .city("上海").keyword(keystr).pageNum(0));
-    }
 
 
 }
