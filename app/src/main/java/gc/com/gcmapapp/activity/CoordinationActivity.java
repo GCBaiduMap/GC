@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -44,8 +45,14 @@ public class CoordinationActivity extends BaseActivity {
      TextView checkTimeTv;
     @BindView(R.id.img_url_tv)
      TextView imgUrlTv;
+    @BindView(R.id.lat_tv)
+    TextView latTv;
+    @BindView(R.id.lng_tv)
+    TextView lngTv;
     @BindView(R.id.img_iv)
      ImageView imgIv;
+    @BindView(R.id.back_ib)
+    ImageButton backIb;
     ImageLoaderUtil imageLoaderUtil ;
 
     @Override
@@ -62,6 +69,8 @@ public class CoordinationActivity extends BaseActivity {
         researchNumberTv.setText(getIntent().getStringExtra("research_number"));
         checkTimeTv.setText(getIntent().getStringExtra("check_time"));
         imgUrlTv.setText(getIntent().getStringExtra("img_url"));
+        latTv.setText(getIntent().getStringExtra("lat"));
+        lngTv.setText(getIntent().getStringExtra("lng"));
         if (!TextUtils.isEmpty(getIntent().getStringExtra("img_id"))) {
             String url = context.getString(R.string.img_url, Url.BASE_URL,  getIntent().getStringExtra("img_id"));
             Log.i("Coordination", "url:" + url);
@@ -69,6 +78,11 @@ public class CoordinationActivity extends BaseActivity {
         } else {
             imgIv.setImageResource(R.mipmap.ic_default_big);
         }
+    }
+
+    @OnClick(R.id.back_ib)
+    public void back(View view){
+        this.finish();
     }
 
 

@@ -47,6 +47,8 @@ public class ShowCoordinateInfoDialog extends Dialog {
 				intent.putExtra("check_time", coordinationInfos.get(i).getCheck_time());
 				intent.putExtra("img_url", coordinationInfos.get(i).getImg_url());
 				intent.putExtra("img_id", coordinationInfos.get(i).getId());
+				intent.putExtra("lat", coordinationInfos.get(i).getLatitude() + "");
+				intent.putExtra("lng", coordinationInfos.get(i).getLongitude() + "");
 				context.startActivity(intent);
 				dismiss();
 			}

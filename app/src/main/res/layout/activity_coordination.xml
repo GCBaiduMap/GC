@@ -3,6 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:background="@color/filters_buttons_selected">
+
+        <ImageButton
+            android:id="@+id/back_ib"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_back"
+            android:background="@null"/>
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/img_iv"
@@ -89,6 +104,46 @@
 
                 <TextView
                     android:id="@+id/img_url_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/grey"
+                    android:textSize="16dp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="经        度："
+                    android:textColor="@color/grey"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/lng_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/grey"
+                    android:textSize="16dp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="纬        度："
+                    android:textColor="@color/grey"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/lat_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""

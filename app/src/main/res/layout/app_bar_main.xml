@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    >
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/bmapView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:clickable="true" />
+
+    <com.mancj.materialsearchbar.MaterialSearchBar
+        style="@style/MySearchBar"
+        android:id="@+id/searchBar"
+        app:mt_navIconEnabled="true"
+        app:mt_placeholder="详细地址查询"
+        app:mt_searchBarColor="@color/filters_buttons_selected"
+        app:mt_navIconUseTint="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+
+
+</FrameLayout>
+
+
