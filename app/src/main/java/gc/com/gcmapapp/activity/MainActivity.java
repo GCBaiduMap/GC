@@ -195,6 +195,8 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         searchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
         CardView cardView = searchBar.findViewById(R.id.mt_container);
         cardView.setRadius(0);
+        searchBar.setHint("");
+        searchBar.setPlaceHolder("详细地址查询");
         searchBar.setOnSearchActionListener(this);
         searchBar.inflateMenu(R.menu.main);
         searchBar.setText("");

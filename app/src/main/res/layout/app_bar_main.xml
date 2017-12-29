@@ -17,7 +17,7 @@
         style="@style/MySearchBar"
         android:id="@+id/searchBar"
         app:mt_navIconEnabled="true"
-        app:mt_placeholder="详细地址查询"
+        app:mt_placeholder=""
         app:mt_searchBarColor="@color/filters_buttons_selected"
         app:mt_navIconUseTint="@color/white"
         android:layout_width="match_parent"

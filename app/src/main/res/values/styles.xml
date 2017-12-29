@@ -53,11 +53,11 @@
         <item name="mt_clearIconTint">@color/white</item>
         <item name="mt_menuIconTint">@color/white</item>
         <item name="mt_backIconTint">@color/white</item>
-        <item name="mt_textCursorTint">@color/searchBarCursorColor</item>
+        <item name="mt_textCursorTint">@color/white</item>
         <item name="mt_textColor">@color/white</item>
         <item name="mt_hintColor">@color/white</item>
         <item name="mt_placeholderColor">@color/white</item>
-        <item name="mt_highlightedTextColor">@color/searchBarTextHighlightColor</item>
+        <item name="mt_highlightedTextColor">@color/white</item>
         <item name="mt_leftTextSelectorTint">@color/leftTextSelectorColor</item>
         <item name="mt_middleTextSelectorTint">@color/middleTextSelectorColor</item>
         <item name="mt_rightTextSelectorTint">@color/rightTextSelectorColor</item>
