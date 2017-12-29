@@ -25,6 +25,7 @@
         tools:ignore="MissingPrefix">
     </RelativeLayout>
     <LinearLayout
+        android:id="@+id/imgbtn_apply"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
@@ -33,7 +34,6 @@
         >
 
         <ImageButton
-            android:id="@+id/imgbtn_apply"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@null"
