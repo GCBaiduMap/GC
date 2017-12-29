@@ -98,6 +98,8 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     DrawerLayout drawer;
     @BindView(R.id.menu_container)
     RelativeLayout menuContainer;
+    @BindView(R.id.imgbtn_apply)
+    ImageButton imgbtnApply;
     BaiduMap mBaiduMap;
     MapStatus ms;
     private ClusterManager<MyItem> mClusterManager;
