@@ -35,6 +35,7 @@ import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.CityInfo;
 import com.baidu.mapapi.search.core.PoiInfo;
@@ -120,9 +121,8 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        iniView();
         mBaiduMap = bmapView.getMap();
+        iniView();
         mBaiduMap.setOnMapLoadedCallback(this);
 
         // 定义点聚合管理类ClusterManager
@@ -162,37 +162,29 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     }
 
     private void iniView(){
-        /**
-         * 当输入关键字变化时，动态更新建议列表
-         */
-//        searchKey.addTextChangedListener(new TextWatcher() {
-//
-//            @Override
-//            public void afterTextChanged(Editable arg0) {
-//
-//            }
-//
-//            @Override
-//            public void beforeTextChanged(CharSequence arg0, int arg1,
-//                                          int arg2, int arg3) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence cs, int arg1, int arg2,
-//                                      int arg3) {
-//                if (cs.length() <= 0) {
-//                    return;
-//                }
-//
-//                /**
-//                 * 使用建议搜索服务获取建议列表，结果在onSuggestionResult()中更新
-//                 */
-//                mSuggestionSearch
-//                        .requestSuggestion((new SuggestionSearchOption())
-//                                .keyword(cs.toString()).city("上海"));
-//            }
-//        });
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                UiSettings settings=mBaiduMap.getUiSettings();
+                settings.setAllGesturesEnabled(false);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                UiSettings settings=mBaiduMap.getUiSettings();
+                settings.setAllGesturesEnabled(true);
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
         searchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
         CardView cardView = searchBar.findViewById(R.id.mt_container);
         cardView.setRadius(0);
@@ -636,6 +628,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         tView.setUse2dScroll(true);
         tView.setSelectionModeEnabled(true);
         menuContainer.addView(tView.getView());
+
     }
 
 
