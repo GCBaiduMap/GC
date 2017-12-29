@@ -46,6 +46,7 @@ dependencies {
         exclude group: 'com.android.support'
     }
     compile files('libs/universal-image-loader-1.9.5.jar')
-    compile 'com.github.mancj:MaterialSearchBar:0.7.5'
+    //compile 'com.github.mancj:MaterialSearchBar:0.7.5'
+    compile project(':library')
 
 }
