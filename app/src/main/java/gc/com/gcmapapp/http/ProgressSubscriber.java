@@ -73,7 +73,7 @@ public  abstract class ProgressSubscriber<T> extends Subscriber<T> implements Pr
 //            Log.i("Observableresult1",e.getMessage());
             _onError(e.getMessage());
         } else {
-            _onError(e.getLocalizedMessage());
+            _onError("无法连接服务器");
         }
         dismissProgressDialog();
     }
