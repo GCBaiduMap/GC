@@ -1,18 +1,24 @@
 package gc.com.gcmapapp.activity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -56,6 +62,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import gc.com.gcmapapp.Fragment.MyFabFragment;
 import gc.com.gcmapapp.R;
+import gc.com.gcmapapp.adapter.CustomSuggestionsAdapter;
 import gc.com.gcmapapp.application.Constants;
 import gc.com.gcmapapp.bean.CoordinationInfo;
 import gc.com.gcmapapp.bean.LocationInfo;
@@ -80,7 +87,7 @@ import mapapi.clusterutil.clustering.ClusterManager;
 import mapapi.overlayutil.PoiOverlay;
 
 
-public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCallback , AAH_FabulousFragment.Callbacks,AAH_FabulousFragment.AnimationListener, OnGetSuggestionResultListener, OnGetPoiSearchResultListener, MaterialSearchBar.OnSearchActionListener {
+public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCallback , AAH_FabulousFragment.Callbacks,AAH_FabulousFragment.AnimationListener, OnGetSuggestionResultListener, OnGetPoiSearchResultListener, MaterialSearchBar.OnSearchActionListener, CustomSuggestionsAdapter.OnSuggestSelectedListener {
 
 
     @BindView(R.id.bmapView)
@@ -103,6 +110,8 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     private ArrayAdapter<String> sugAdapter = null;
     TreeNode root;
     private AndroidTreeView tView;
+    private CustomSuggestionsAdapter customSuggestionsAdapter;
+    private boolean isSelectSuggestion;
 
 
     @Override
@@ -205,9 +214,12 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
                 /**
                  * 使用建议搜索服务获取建议列表，结果在onSuggestionResult()中更新
                  */
+                if(!isSelectSuggestion)
                 mSuggestionSearch
                         .requestSuggestion((new SuggestionSearchOption())
                                 .keyword(charSequence.toString()).city("上海"));
+                else
+                    isSelectSuggestion = false;
             }
 
             @Override
@@ -216,12 +228,25 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
             }
 
         });
+        searchBar.getMenu().setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if("注销".equals(item.getTitle())){
+                    MainActivity.this.finish();
+                    Intent intent = new Intent(context, LoginActivity.class);
+                    context.startActivity(intent);
+                }
+                return false;
+            }
+        });
         // 初始化建议搜索模块，注册建议搜索事件监听
         mSuggestionSearch = SuggestionSearch.newInstance();
         mSuggestionSearch.setOnGetSuggestionResultListener(this);
         // 初始化搜索模块，注册搜索事件监听
         mPoiSearch = PoiSearch.newInstance();
         mPoiSearch.setOnGetPoiSearchResultListener(this);
+
+
     }
 
 
@@ -331,6 +356,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     @Override
     public void onGetSuggestionResult(SuggestionResult res) {
         if (res == null || res.getAllSuggestions() == null) {
+            searchBar.hideSuggestionsList();
             return;
         }
         suggest = new ArrayList<String>();
@@ -339,15 +365,23 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
                 suggest.add(info.key);
             }
         }
-//        sugAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, suggest);
-//        searchKey.setAdapter(sugAdapter);
-//        sugAdapter.notifyDataSetChanged();
+        if(customSuggestionsAdapter == null){
+            LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+            customSuggestionsAdapter = new CustomSuggestionsAdapter(inflater, this);
+            searchBar.setCustomSuggestionAdapter(customSuggestionsAdapter);
+        }
+        customSuggestionsAdapter.setSuggestions(suggest);
+        if(!searchBar.isSuggestionsVisible())
+          searchBar.showSuggestionsList();
+        else
+            customSuggestionsAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onGetPoiResult(PoiResult result) {
         if (result == null || result.error == SearchResult.ERRORNO.RESULT_NOT_FOUND) {
             ToastUtils.showMessage(context, "未找到结果");
+            searchBar.hideSuggestionsList();
             return;
         }
         if (result.error == SearchResult.ERRORNO.NO_ERROR) {
@@ -383,7 +417,16 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 
     @Override
     public void onSearchConfirmed(CharSequence text) {
-
+        String keystr = searchBar.getText().toString();
+        mPoiSearch.searchInCity((new PoiCitySearchOption())
+                .city("上海").keyword(keystr).pageNum(0));
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(imm != null){
+            imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(),
+                    0);
+        }
+        if(searchBar.isSuggestionsVisible())
+            searchBar.hideSuggestionsList();
     }
 
     @Override
@@ -393,14 +436,25 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
                 drawer.openDrawer(Gravity.LEFT);
                 break;
             case MaterialSearchBar.BUTTON_SPEECH:
-                String keystr = searchBar.getText().toString();
-                mPoiSearch.searchInCity((new PoiCitySearchOption())
-                        .city("上海").keyword(keystr).pageNum(0));
                 break;
             case MaterialSearchBar.BUTTON_BACK:
                 searchBar.disableSearch();
                 break;
         }
+    }
+
+    @Override
+    public void onSuggestSelected(String suggestion) {
+        isSelectSuggestion = true;
+        searchBar.setText(suggestion);
+        mPoiSearch.searchInCity((new PoiCitySearchOption())
+                .city("上海").keyword(suggestion).pageNum(0));
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(imm != null){
+            imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(),
+                    0);
+        }
+        searchBar.hideSuggestionsList();
     }
 
     private class MyPoiOverlay extends PoiOverlay {
