@@ -23,6 +23,7 @@ import gc.com.gcmapapp.http.ProgressSubscriber;
 import gc.com.gcmapapp.http.Url;
 import gc.com.gcmapapp.utils.SharePreferenceUtil;
 import gc.com.gcmapapp.utils.ToastUtils;
+import okhttp3.HttpUrl;
 
 
 /**
@@ -66,6 +67,12 @@ public class LoginActivity extends BaseActivity {
             ToastUtils.showMessage(context, "密码为空");
             return;
         }
+        HttpUrl httpUrl = HttpUrl.parse(Url.BASE_URL);
+        if(httpUrl == null){
+            ToastUtils.showMessage(context, "服务器地址错误");
+            return;
+        }
+
         HttpUtil.getInstance().toSubscribe(Api.getDefault(context).login(userName, password), new ProgressSubscriber<Login>(this) {
             @Override
             protected void _onNext(Login login) {
