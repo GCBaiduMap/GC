@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.icu.text.CompactDecimalFormat;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GravityCompat;
@@ -285,7 +286,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 
     @Override
     public void onMapLoaded() {
-        ms = new MapStatus.Builder().zoom(9).build();
+        ms = new MapStatus.Builder().target(new LatLng(31.23, 121.47)).zoom(10).build();
         mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
     }
 
@@ -521,8 +522,8 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
             }
 
             mClusterManager.addItems(items);
-            ms = new MapStatus.Builder().target(new LatLng(31.23, 121.47)).zoom(10).build();
-            mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
+            mClusterManager.cluster();
+
         }
 
 
