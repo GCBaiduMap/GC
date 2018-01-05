@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -333,9 +334,14 @@ public class MaterialSearchBar extends RelativeLayout implements View.OnClickLis
     private void setupIcons() {
         //Drawables
         //Animated Nav Icon
-        navIconResId = R.drawable.ic_menu_animated;
-        this.navIcon.setImageResource(navIconResId);
-        setNavButtonEnabled(navButtonEnabled);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            navIconResId = R.drawable.ic_menu_animated;
+            this.navIcon.setImageResource(navIconResId);
+            setNavButtonEnabled(navButtonEnabled);
+        }else{
+            this.navIcon.setImageResource(R.drawable.ic_menu_black_24dp);
+        }
+
 
         //Menu
         if (popupMenu == null) {
@@ -477,15 +483,25 @@ public class MaterialSearchBar extends RelativeLayout implements View.OnClickLis
     }
 
     private void animateNavIcon() {
-        if (navIconShown) {
-            this.navIcon.setImageResource(R.drawable.ic_menu_animated);
-        } else {
-            this.navIcon.setImageResource(R.drawable.ic_back_animated);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            if (navIconShown) {
+                this.navIcon.setImageResource(R.drawable.ic_menu_animated);
+            } else {
+                this.navIcon.setImageResource(R.drawable.ic_back_animated);
+            }
+            Drawable mDrawable = navIcon.getDrawable();
+            if (mDrawable instanceof Animatable) {
+                ((Animatable) mDrawable).start();
+            }
+        }else{
+            if (navIconShown) {
+                this.navIcon.setVisibility(INVISIBLE);
+            } else {
+                //this.navIcon.setImageResource(R.drawable.ic_arrow_left_black_48dp);
+                this.navIcon.setVisibility(VISIBLE);
+            }
         }
-        Drawable mDrawable = navIcon.getDrawable();
-        if (mDrawable instanceof Animatable) {
-            ((Animatable) mDrawable).start();
-        }
+
         navIconShown = !navIconShown;
     }
 

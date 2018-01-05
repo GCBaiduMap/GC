@@ -50,7 +50,7 @@ public class CoordinationActivity extends BaseActivity {
     @BindView(R.id.lng_tv)
     TextView lngTv;
     @BindView(R.id.img_iv)
-     ImageView imgIv;
+    ImageView imgIv;
     @BindView(R.id.back_ib)
     ImageButton backIb;
     ImageLoaderUtil imageLoaderUtil ;
@@ -83,6 +83,13 @@ public class CoordinationActivity extends BaseActivity {
     @OnClick(R.id.back_ib)
     public void back(View view){
         this.finish();
+    }
+
+    @OnClick(R.id.img_iv)
+    public void showImg(View view){
+        Intent intent = new Intent(context, PhotoActivity.class);
+        intent.putExtra("img_id", getIntent().getStringExtra("img_id"));
+        startActivity(intent);
     }
 
 
