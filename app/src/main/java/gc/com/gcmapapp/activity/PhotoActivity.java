@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
-import com.github.chrisbanes.photoview.PhotoView;
+import com.bm.library.PhotoView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import butterknife.BindView;
@@ -41,6 +41,7 @@ public class PhotoActivity extends BaseActivity {
     }
 
     private void iniView() {
+        ivPhoto.enable();
         if (!TextUtils.isEmpty(getIntent().getStringExtra("img_id"))) {
             String url = context.getString(R.string.img_url, Url.BASE_URL, getIntent().getStringExtra("img_id"));
             Log.i("Coordination", "url:" + url);
