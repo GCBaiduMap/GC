@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.allattentionhere.fabulousfilter.AAH_FabulousFragment;
@@ -35,6 +37,8 @@ import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.CityInfo;
@@ -89,7 +93,7 @@ import mapapi.clusterutil.clustering.ClusterManager;
 import mapapi.overlayutil.PoiOverlay;
 
 
-public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCallback , AAH_FabulousFragment.Callbacks,AAH_FabulousFragment.AnimationListener, OnGetSuggestionResultListener, OnGetPoiSearchResultListener, MaterialSearchBar.OnSearchActionListener, CustomSuggestionsAdapter.OnSuggestSelectedListener {
+public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCallback, AAH_FabulousFragment.Callbacks, AAH_FabulousFragment.AnimationListener, OnGetSuggestionResultListener, OnGetPoiSearchResultListener, MaterialSearchBar.OnSearchActionListener, CustomSuggestionsAdapter.OnSuggestSelectedListener {
 
 
     @BindView(R.id.bmapView)
@@ -114,6 +118,11 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     private AndroidTreeView tView;
     private CustomSuggestionsAdapter customSuggestionsAdapter;
     private boolean isSelectSuggestion;
+    private String currentKey;
+    private String currentCacheKey;
+    private String currentLevel;
+    private List<String> clickedMarkers = new ArrayList<>();
+    private boolean backLoading;
 
 
     @Override
@@ -134,34 +143,56 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         // 设置maker点击时的响应
         mBaiduMap.setOnMarkerClickListener(mClusterManager);
 
-        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MyItem>() {
-            @Override
-            public boolean onClusterClick(Cluster<MyItem> cluster) {
-                Toast.makeText(MainActivity.this,
-                        "有" + cluster.getSize() + "个点", Toast.LENGTH_SHORT).show();
-                float zoom = mBaiduMap.getMapStatus().zoom;
-                if (zoom < 12)
-                    zoom = 12;
-                ms = new MapStatus.Builder().target(cluster.getPosition()).zoom(zoom).build();
-                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
-
-                return false;
-            }
-        });
-        mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MyItem>() {
-            @Override
-            public boolean onClusterItemClick(MyItem item) {
+//        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MyItem>() {
+//            @Override
+//            public boolean onClusterClick(Cluster<MyItem> cluster) {
 //                Toast.makeText(MainActivity.this,
-//                        "点击单个Item", Toast.LENGTH_SHORT).show();
-                getCoordinateInfo(item.id);
+//                        "有" + cluster.getSize() + "个点", Toast.LENGTH_SHORT).show();
+//                float zoom = mBaiduMap.getMapStatus().zoom;
+//                if (zoom < 12)
+//                    zoom = 12;
+//                ms = new MapStatus.Builder().target(cluster.getPosition()).zoom(zoom).build();
+//                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
+//
+//                return false;
+//            }
+//        });
+//        mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MyItem>() {
+//            @Override
+//            public boolean onClusterItemClick(MyItem item) {
+////                Toast.makeText(MainActivity.this,
+////                        "点击单个Item", Toast.LENGTH_SHORT).show();
+//                getCoordinateInfo(item.id);
+//
+//                return false;
+//            }
+//        });
+        mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if (!TextUtils.isEmpty(marker.getExtraInfo().getString("nextLevel"))) {
+                    currentKey = marker.getExtraInfo().getString("key");
+                    currentCacheKey = marker.getExtraInfo().getString("cacheKey");
+                    currentLevel = marker.getExtraInfo().getString("currentLevel");
+                    if (TextUtils.isEmpty(currentKey))
+                        return true;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(currentKey + ",");
+                    sb.append(currentCacheKey + ",");
+                    sb.append(currentLevel);
+                    clickedMarkers.add(sb.toString());
 
-                return false;
+                    getNextMapInfoByKey(currentKey, currentCacheKey, currentLevel);
+                } else {
+                    getCoordinateInfo(marker.getExtraInfo().getString("ids"));
+                }
+                return true;
             }
         });
         getMenu();
     }
 
-    private void iniView(){
+    private void iniView() {
         drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -170,13 +201,13 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                UiSettings settings=mBaiduMap.getUiSettings();
+                UiSettings settings = mBaiduMap.getUiSettings();
                 settings.setAllGesturesEnabled(false);
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                UiSettings settings=mBaiduMap.getUiSettings();
+                UiSettings settings = mBaiduMap.getUiSettings();
                 settings.setAllGesturesEnabled(true);
             }
 
@@ -209,10 +240,10 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
                 /**
                  * 使用建议搜索服务获取建议列表，结果在onSuggestionResult()中更新
                  */
-                if(!isSelectSuggestion)
-                mSuggestionSearch
-                        .requestSuggestion((new SuggestionSearchOption())
-                                .keyword(charSequence.toString()).city("上海"));
+                if (!isSelectSuggestion)
+                    mSuggestionSearch
+                            .requestSuggestion((new SuggestionSearchOption())
+                                    .keyword(charSequence.toString()).city("上海"));
                 else
                     isSelectSuggestion = false;
             }
@@ -226,7 +257,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         searchBar.getMenu().setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if("注销".equals(item.getTitle())){
+                if ("注销".equals(item.getTitle())) {
                     MainActivity.this.finish();
                     Intent intent = new Intent(context, LoginActivity.class);
                     context.startActivity(intent);
@@ -284,29 +315,29 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 
     @Override
     public void onResult(Object result) {
-       String jsonId = (String) result;
+        String jsonId = (String) result;
         Log.i("MainActivity", "onResult jsonId:" + jsonId);
-        if(!TextUtils.isEmpty(jsonId)){
+        if (!TextUtils.isEmpty(jsonId)) {
             getMapInfo(jsonId);
         }
     }
 
     @OnClick(R.id.imgbtn_apply)
-    public void getMapInfo(View view){
+    public void getMapInfo(View view) {
         drawer.closeDrawer(GravityCompat.START);
         List<MapInfo> mapInfos = new ArrayList<>();
-        for(TreeNode firstTreeNode : root.getChildren()){
-            if(TreeUtils.isSelected(firstTreeNode)){
+        for (TreeNode firstTreeNode : root.getChildren()) {
+            if (TreeUtils.isSelected(firstTreeNode)) {
                 MapInfo firstMapInfo = new MapInfo();
-                firstMapInfo.setProject_id(((IconTreeItemHolder.IconTreeItem)firstTreeNode.getValue()).id);
+                firstMapInfo.setProject_id(((IconTreeItemHolder.IconTreeItem) firstTreeNode.getValue()).id);
                 List<MapInfo.SecondMap> secondMaps = new ArrayList<>();
-                for(TreeNode secondTreeNode: firstTreeNode.getChildren()){
-                    if(TreeUtils.isSelected(secondTreeNode)){
+                for (TreeNode secondTreeNode : firstTreeNode.getChildren()) {
+                    if (TreeUtils.isSelected(secondTreeNode)) {
                         MapInfo.SecondMap secondMapInfo = new MapInfo.SecondMap();
-                        secondMapInfo.setAttribute_id(((IconTreeItemHolder.IconTreeItem)secondTreeNode.getValue()).id);
+                        secondMapInfo.setAttribute_id(((IconTreeItemHolder.IconTreeItem) secondTreeNode.getValue()).id);
                         List<MapInfo.ThirdMap> thirdMaps = new ArrayList<>();
-                        for(TreeNode thirdTreeNode: secondTreeNode.getChildren()){
-                            if(thirdTreeNode.isSelected()) {
+                        for (TreeNode thirdTreeNode : secondTreeNode.getChildren()) {
+                            if (thirdTreeNode.isSelected()) {
                                 MapInfo.ThirdMap thirdMap = new MapInfo.ThirdMap();
                                 thirdMap.setCondition_id(((IconTreeItemHolder.IconTreeItem) thirdTreeNode.getValue()).id);
                                 thirdMaps.add(thirdMap);
@@ -323,7 +354,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         }
         Gson gson = new Gson();
         String jsonId = gson.toJson(mapInfos);
-        if(!TextUtils.isEmpty(jsonId)){
+        if (!TextUtils.isEmpty(jsonId)) {
             getMapInfo(jsonId);
         }
     }
@@ -360,14 +391,14 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
                 suggest.add(info.key);
             }
         }
-        if(customSuggestionsAdapter == null){
+        if (customSuggestionsAdapter == null) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
             customSuggestionsAdapter = new CustomSuggestionsAdapter(inflater, this);
             searchBar.setCustomSuggestionAdapter(customSuggestionsAdapter);
         }
         customSuggestionsAdapter.setSuggestions(suggest);
-        if(!searchBar.isSuggestionsVisible())
-          searchBar.showSuggestionsList();
+        if (!searchBar.isSuggestionsVisible())
+            searchBar.showSuggestionsList();
         else
             customSuggestionsAdapter.notifyDataSetChanged();
     }
@@ -416,17 +447,17 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         mPoiSearch.searchInCity((new PoiCitySearchOption())
                 .city("上海").keyword(keystr).pageNum(0));
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if(imm != null){
+        if (imm != null) {
             imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(),
                     0);
         }
-        if(searchBar.isSuggestionsVisible())
+        if (searchBar.isSuggestionsVisible())
             searchBar.hideSuggestionsList();
     }
 
     @Override
     public void onButtonClicked(int buttonCode) {
-        switch (buttonCode){
+        switch (buttonCode) {
             case MaterialSearchBar.BUTTON_NAVIGATION:
                 drawer.openDrawer(Gravity.LEFT);
                 break;
@@ -445,7 +476,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         mPoiSearch.searchInCity((new PoiCitySearchOption())
                 .city("上海").keyword(suggestion).pageNum(0));
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if(imm != null){
+        if (imm != null) {
             imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(),
                     0);
         }
@@ -498,23 +529,27 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
      * 向地图添加Marker点
      */
     public void addMarkers(List<MapResult> mapResults) {
-        if(mapResults != null && mapResults.size() >0){
+        if (mapResults != null && mapResults.size() > 0) {
             // 添加Marker点
 
-            List<MyItem> items = new ArrayList<MyItem>();
-            mClusterManager.clearItems();
-
-
-//            List<LocationInfo> locationInfos = RegionParse.getRegionBean(this);
-//            for (LocationInfo locationInfo : locationInfos) {
-//                items.add(new MyItem(new LatLng(locationInfo.getLen(), locationInfo.getLat())));
+//            List<MyItem> items = new ArrayList<MyItem>();
+//            mClusterManager.clearItems();
+//            for(MapResult mapResult : mapResults){
+//                items.add(new MyItem(new LatLng(mapResult.getLatitude(), mapResult.getLongitude()), mapResult.getId()));
 //            }
-            for(MapResult mapResult : mapResults){
-                items.add(new MyItem(new LatLng(mapResult.getLatitude(), mapResult.getLongitude()), mapResult.getId()));
+//            mClusterManager.addItems(items);
+//            mClusterManager.cluster();
+            for (MapResult mapResult : mapResults) {
+                View view = LayoutInflater.from(context).inflate(R.layout.item_marker, null);
+                TextView tv = view.findViewById(R.id.text);
+                tv.setText(context.getString(R.string.marker_info, mapResult.getText(), mapResult.getTotalitem()));
+                BitmapDescriptor bd = BitmapDescriptorFactory
+                        .fromView(view);
+                MarkerOptions ooA = new MarkerOptions().position(new LatLng(mapResult.getLatitude(), mapResult.getLongitude())).icon(bd)
+                        .zIndex(9).draggable(true);
+                Marker marker = (Marker) (mBaiduMap.addOverlay(ooA));
+                marker.setExtraInfo(mapResult.toBundle());
             }
-
-            mClusterManager.addItems(items);
-            mClusterManager.cluster();
 
         }
 
@@ -528,7 +563,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
             protected void _onNext(List<Menu> menus) {
                 MainActivity.this.menus = menus;
                 iniMenu();
-                if(menus != null && menus.size() >0){
+                if (menus != null && menus.size() > 0) {
                     getMapInfo(getJsonId());
                 }
             }
@@ -539,7 +574,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         }, lifecycleSubject);
     }
 
-    private String getJsonId( ){
+    private String getJsonId() {
         List<MapInfo> mapInfos = new ArrayList<>();
         MapInfo mapInfo = new MapInfo();
         mapInfo.setProject_id(menus.get(0).getId());
@@ -580,6 +615,37 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         }, lifecycleSubject);
     }
 
+    public void getNextMapInfoByKey(String key, String cacheKey, String currentLevel) {
+        HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getNextMapInfoByKey(key, cacheKey, currentLevel), new ProgressSubscriber<List<MapResult>>(this) {
+            @Override
+            protected void _onNext(List<MapResult> mapResults) {
+                mBaiduMap.clear();
+                addMarkers(mapResults);
+            }
+
+            @Override
+            protected void _onError(String message) {
+
+            }
+        }, lifecycleSubject);
+    }
+
+    public void getPreMapInfoByKey(String key, String cacheKey, String currentLevel) {
+        HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getPreMapInfoByKey(key, cacheKey, currentLevel), new ProgressSubscriber<List<MapResult>>(this) {
+            @Override
+            protected void _onNext(List<MapResult> mapResults) {
+                mBaiduMap.clear();
+                addMarkers(mapResults);
+                backLoading = false;
+            }
+
+            @Override
+            protected void _onError(String message) {
+                backLoading = false;
+            }
+        }, lifecycleSubject);
+    }
+
 
     public void getCoordinateInfo(String coordinateId) {
 
@@ -599,23 +665,13 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     }
 
 
-
-
-//    @OnClick(R.id.btn_search)
-//    public void search(View v){
-//        String keystr = searchKey.getText().toString();
-//        mPoiSearch.searchInCity((new PoiCitySearchOption())
-//                .city("上海").keyword(keystr).pageNum(0));
-//    }
-
-
-    private void iniMenu(){
+    private void iniMenu() {
         root = TreeNode.root();
-        for(Menu menu: menus){
+        for (Menu menu : menus) {
             TreeNode firstMemuNode = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_sd_storage, menu.getMenuName(), menu.getId())).setViewHolder(new ProfileHolder(context));
-            for(Menu.SecondMenu secondMenu : menu.getChildren()){
+            for (Menu.SecondMenu secondMenu : menu.getChildren()) {
                 TreeNode secondMemuNode = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder, secondMenu.getMenuName(), secondMenu.getId())).setViewHolder(new SelectableHeaderHolder(context));
-                for(Menu.ThirdMenu thirdMenu : secondMenu.getChildren()){
+                for (Menu.ThirdMenu thirdMenu : secondMenu.getChildren()) {
                     TreeNode thirdMemuNode = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder, thirdMenu.getMenuName(), thirdMenu.getId())).setViewHolder(new SelectableItemHolder(context));
                     secondMemuNode.addChild(thirdMemuNode);
                 }
@@ -631,7 +687,27 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            if (clickedMarkers.size() > 0) {
+                if (!backLoading) {
+                    backLoading = true;
+                    String value = clickedMarkers.get(clickedMarkers.size() - 1);
+                    String[] values = value.split(",");
+                    getPreMapInfoByKey(values[0], values[1], values[2]);
+                    clickedMarkers.remove(value);
+                }
 
+            } else {
+                return super.onKeyDown(keyCode, event);
+            }
+            return false;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+
+    }
 
 
 }

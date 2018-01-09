@@ -26,6 +26,15 @@ public interface ApiService {
     @POST("app/getMapInfo")
     Observable<ResultMsg<List<MapResult>>> getMapInfo(@Field("jsonIds") String jsonIds);
 
+    @FormUrlEncoded
+    @POST("app/getNextMapInfoByKey")
+    Observable<ResultMsg<List<MapResult>>> getNextMapInfoByKey(@Field("key") String key,@Field("cacheKey") String cacheKey,@Field("currentLevel") String currentLevel);
+
+
+    @FormUrlEncoded
+    @POST("app/getPreMapInfoByKey")
+    Observable<ResultMsg<List<MapResult>>> getPreMapInfoByKey(@Field("key") String key,@Field("cacheKey") String cacheKey,@Field("currentLevel") String currentLevel);
+
     @POST("app/getCoordinateInfo")
     Observable<ResultMsg<List<CoordinationInfo>>> getCoordinateInfo(@Query("coordinateId") String coordinateId);
 
