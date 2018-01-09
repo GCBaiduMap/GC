@@ -309,7 +309,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 
     @Override
     public void onMapLoaded() {
-        ms = new MapStatus.Builder().target(new LatLng(31.23, 121.47)).zoom(10).build();
+        ms = new MapStatus.Builder().target(new LatLng(31.23, 121.47)).zoom(12).build();
         mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
     }
 
@@ -621,6 +621,9 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
             protected void _onNext(List<MapResult> mapResults) {
                 mBaiduMap.clear();
                 addMarkers(mapResults);
+                float zoom = mBaiduMap.getMapStatus().zoom + 2;
+                ms = new MapStatus.Builder().target(new LatLng(mapResults.get(0).getLatitude(), mapResults.get(0).getLongitude())).zoom(zoom).build();
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
             }
 
             @Override
@@ -636,6 +639,11 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
             protected void _onNext(List<MapResult> mapResults) {
                 mBaiduMap.clear();
                 addMarkers(mapResults);
+                float zoom = mBaiduMap.getMapStatus().zoom - 2;
+                if (zoom < 12)
+                    zoom = 12;
+                ms = new MapStatus.Builder().target(new LatLng(mapResults.get(0).getLatitude(), mapResults.get(0).getLongitude())).zoom(zoom).build();
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
                 backLoading = false;
             }
 
