@@ -6,15 +6,20 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.OnClick;
 import gc.com.gcmapapp.R;
 import gc.com.gcmapapp.activity.CoordinationActivity;
 import gc.com.gcmapapp.adapter.CoordinationAdapter;
@@ -30,7 +35,7 @@ public class ShowCoordinateInfoDialog extends Dialog {
 	List<CoordinationInfo> coordinationInfos;
 	private CoordinationAdapter coordinationAdapter;
 	private RelativeLayout cooridnationContainer;
-
+	Button btnClose;
 	private ShowCoordinateInfoDialog(final Context context, int theme) {
 		super(context, theme);
 		this.context = context;
@@ -55,6 +60,14 @@ public class ShowCoordinateInfoDialog extends Dialog {
 		});
 		setCancelable(true);
 		setCanceledOnTouchOutside(false);
+
+		btnClose = findViewById(R.id.btn_close);
+		btnClose.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				dismiss();
+			}
+		});
 	}
 
 	public static  ShowCoordinateInfoDialog createDialog(
@@ -132,5 +145,4 @@ public class ShowCoordinateInfoDialog extends Dialog {
 	public interface OnAnimationEnd{
 		void onEnd();
 	}
-
 }
