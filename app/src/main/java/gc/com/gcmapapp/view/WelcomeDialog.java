@@ -62,8 +62,8 @@ public class WelcomeDialog extends Dialog {
     }
 
     public void setContent(String name, String textContent){
-        nameTV.setText("欢迎:"+name);
-        contentTV.setText(textContent);
+        nameTV.setText("欢迎 "+name);
+        contentTV.setText("当前项目:"+textContent);
         startAnimation();
     }
 
