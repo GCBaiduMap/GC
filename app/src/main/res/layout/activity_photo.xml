@@ -4,20 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:gravity="center_vertical"
-        android:background="@color/filters_buttons_selected">
-
-        <ImageButton
-            android:id="@+id/back_ib"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_back"
-            android:background="@null"/>
-
-    </LinearLayout>
 
     <com.bm.library.PhotoView
         android:id="@+id/iv_photo"

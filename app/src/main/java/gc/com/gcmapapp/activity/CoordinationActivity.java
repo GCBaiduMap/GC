@@ -3,6 +3,7 @@ package gc.com.gcmapapp.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,6 +16,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -94,7 +97,27 @@ public class CoordinationActivity extends BaseActivity {
         if (!TextUtils.isEmpty(getIntent().getStringExtra("img_id"))) {
             String url = context.getString(R.string.img_url, Url.BASE_URL,  getIntent().getStringExtra("img_id"));
             Log.i("Coordination", "url:" + url);
-            imageLoaderUtil.displayImage(url, imgIv, ImageLoader.getInstance());
+            imageLoaderUtil.displayImage(url, imgIv, ImageLoader.getInstance(), new ImageLoadingListener() {
+                @Override
+                public void onLoadingStarted(String s, View view) {
+
+                }
+
+                @Override
+                public void onLoadingFailed(String s, View view, FailReason failReason) {
+                    imgIv.setImageResource(R.mipmap.ic_default_big);
+                }
+
+                @Override
+                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+
+                }
+
+                @Override
+                public void onLoadingCancelled(String s, View view) {
+
+                }
+            });
         } else {
             imgIv.setImageResource(R.mipmap.ic_default_big);
         }

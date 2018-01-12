@@ -1,6 +1,7 @@
 package gc.com.gcmapapp.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.List;
 
@@ -115,7 +118,27 @@ public class CoordinationAdapter extends BaseAdapter {
         if (!TextUtils.isEmpty(coordinationInfos.get(position).getId())) {
             String url = mContext.getString(R.string.img_url, Url.BASE_URL,  coordinationInfos.get(position).getId());
             Log.i("Coordination", "url:" + url);
-            imageLoaderUtil.displayImage(url, holder.imgIv, ImageLoader.getInstance());
+            imageLoaderUtil.displayImage(url, holder.imgIv, ImageLoader.getInstance(), new ImageLoadingListener() {
+                @Override
+                public void onLoadingStarted(String s, View view) {
+
+                }
+
+                @Override
+                public void onLoadingFailed(String s, View view, FailReason failReason) {
+                    ((ImageView)view).setImageResource(R.mipmap.ic_default);
+                }
+
+                @Override
+                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+
+                }
+
+                @Override
+                public void onLoadingCancelled(String s, View view) {
+
+                }
+            });
         } else {
             holder.imgIv
                     .setImageResource(R.mipmap.ic_default);

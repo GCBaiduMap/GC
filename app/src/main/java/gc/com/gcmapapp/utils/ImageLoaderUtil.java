@@ -24,7 +24,7 @@ public class ImageLoaderUtil {
 	}
 
 	public void displayImage(final String url, final ImageView full_image,
-							 final ImageLoader imageloader) {
+							 final ImageLoader imageloader, final ImageLoadingListener listener) {
 
 		if (url.equals("https:null")) {
 			return;
@@ -40,28 +40,29 @@ public class ImageLoaderUtil {
 					@Override
 					public void onLoadingFailed(final String imageUri,
 												final View view, FailReason failReason) {
-						ImageView imageView = (ImageView) view;
-						// if (imageView != null) {
-						// imageView.setImageBitmap(null);
-						// }
-
-						switch (failReason.getType()) {
-						case IO_ERROR:
-							break;
-						case DECODING_ERROR:
-							break;
-
-						case NETWORK_DENIED:
-							break;
-
-						case OUT_OF_MEMORY:
-							break;
-
-						case UNKNOWN:
-							break;
-						default:
-							break;
-						}
+//						ImageView imageView = (ImageView) view;
+//						// if (imageView != null) {
+//						// imageView.setImageBitmap(null);
+//						// }
+//
+//						switch (failReason.getType()) {
+//						case IO_ERROR:
+//							break;
+//						case DECODING_ERROR:
+//							break;
+//
+//						case NETWORK_DENIED:
+//							break;
+//
+//						case OUT_OF_MEMORY:
+//							break;
+//
+//						case UNKNOWN:
+//							break;
+//						default:
+//							break;
+//						}
+						listener.onLoadingFailed(imageUri,view,failReason);
 					}
 
 					@Override
