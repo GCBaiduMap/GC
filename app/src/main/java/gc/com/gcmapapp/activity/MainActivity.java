@@ -1,5 +1,8 @@
 package gc.com.gcmapapp.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +23,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -83,10 +87,12 @@ import gc.com.gcmapapp.http.Api;
 import gc.com.gcmapapp.http.HttpUtil;
 import gc.com.gcmapapp.http.ProgressSubscriber;
 import gc.com.gcmapapp.utils.RegionParse;
+import gc.com.gcmapapp.utils.ScreenUtils;
 import gc.com.gcmapapp.utils.SharePreferenceUtil;
 import gc.com.gcmapapp.utils.ToastUtils;
 import gc.com.gcmapapp.utils.TreeUtils;
 import gc.com.gcmapapp.view.ShowCoordinateInfoDialog;
+import gc.com.gcmapapp.view.WelcomeDialog;
 import mapapi.clusterutil.clustering.Cluster;
 import mapapi.clusterutil.clustering.ClusterItem;
 import mapapi.clusterutil.clustering.ClusterManager;
@@ -552,10 +558,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
             }
 
         }
-
-
     }
-
 
     public void getMenu() {
         HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getMenu(), new ProgressSubscriber<List<Menu>>(this) {
@@ -564,6 +567,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
                 MainActivity.this.menus = menus;
                 iniMenu();
                 if (menus != null && menus.size() > 0) {
+                    SharePreferenceUtil.put(getApplicationContext(), Constants.PROJECTNAME, menus.get(0).getMenuName());
                     getMapInfo(getJsonId());
                 }
             }
@@ -606,6 +610,20 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
             protected void _onNext(List<MapResult> mapResults) {
                 mBaiduMap.clear();
                 addMarkers(mapResults);
+                String showOnce = (String) SharePreferenceUtil.get(getApplicationContext(), Constants.SHOWONCE, "");
+                if(TextUtils.isEmpty(showOnce))
+                {
+                    String name = (String) SharePreferenceUtil.get(getApplicationContext(), Constants.USERNAME, "");
+                    String projectName = (String) SharePreferenceUtil.get(getApplicationContext(), Constants.PROJECTNAME, "");
+                    if(!TextUtils.isEmpty(name)&&!TextUtils.isEmpty(projectName))
+                    {
+                        WelcomeDialog welcomeDialog = WelcomeDialog.createDialog(context);
+                        welcomeDialog.setContent(name,projectName);
+                        welcomeDialog.show();
+                        SharePreferenceUtil.put(getApplicationContext(), Constants.PROJECTNAME, "1");
+                    }
+                }
+
             }
 
             @Override
@@ -692,7 +710,6 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         tView.setUse2dScroll(true);
         tView.setSelectionModeEnabled(true);
         menuContainer.addView(tView.getView());
-
     }
 
     @Override
@@ -716,7 +733,5 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         }
 
     }
-
-
 }
 

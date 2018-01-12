@@ -77,6 +77,8 @@ public class LoginActivity extends BaseActivity {
             @Override
             protected void _onNext(Login login) {
                 SharePreferenceUtil.put(getApplicationContext(), Constants.TOKEN, login.getToken());
+                SharePreferenceUtil.put(getApplicationContext(), Constants.USERNAME, login.getReal_name());
+                SharePreferenceUtil.put(getApplicationContext(), Constants.PROJECTNAME, "");
                 Intent intent = new Intent(context, MainActivity.class);
                 startActivity(intent);
                 finish();

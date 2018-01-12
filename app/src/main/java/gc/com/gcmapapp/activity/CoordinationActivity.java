@@ -106,11 +106,12 @@ public class CoordinationActivity extends BaseActivity {
                 @Override
                 public void onLoadingFailed(String s, View view, FailReason failReason) {
                     imgIv.setImageResource(R.mipmap.ic_default_big);
+                    imgIv.setEnabled(false);
                 }
 
                 @Override
                 public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-
+                    imgIv.setEnabled(true);
                 }
 
                 @Override
