@@ -30,7 +30,7 @@ public class CoordinationAdapter extends BaseAdapter {
         this.mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
         this.coordinationInfos = coordinationInfos;
-         imageLoaderUtil = new ImageLoaderUtil();
+        imageLoaderUtil = new ImageLoaderUtil();
     }
 
 
@@ -59,20 +59,59 @@ public class CoordinationAdapter extends BaseAdapter {
         if (null == view) {
             view = mLayoutInflater.inflate(R.layout.item_coordination, null);
             holder = new Holder();
-            holder.detailAddressTv = (TextView) view.findViewById(R.id.detail_address_tv);
-            holder.researchNumberTv = (TextView) view.findViewById(R.id.research_number_tv);
-            holder.checkTimeTv = (TextView) view.findViewById(R.id.check_time_tv);
-            holder.imgUrlTv = (TextView) view.findViewById(R.id.img_url_tv);
+            holder.key1_tv = (TextView)view.findViewById(R.id.key1_tv);
+            holder.value1_tv = (TextView)view.findViewById(R.id.value1_tv);
+            holder.key2_tv = (TextView)view.findViewById(R.id.key2_tv);
+            holder.value2_tv = (TextView)view.findViewById(R.id.value2_tv);
+            holder.key3_tv = (TextView)view.findViewById(R.id.key3_tv);
+            holder.value3_tv = (TextView)view.findViewById(R.id.value3_tv);
+            holder.key4_tv = (TextView)view.findViewById(R.id.key4_tv);
+            holder.value4_tv = (TextView)view.findViewById(R.id.value4_tv);
             holder.divider = view.findViewById(R.id.divider);
             holder.imgIv = view.findViewById(R.id.img_iv);
             view.setTag(holder);
         } else {
             holder = (Holder) view.getTag();
         }
-        holder.detailAddressTv.setText(coordinationInfos.get(position).getDetail_address());
-        holder.researchNumberTv.setText(coordinationInfos.get(position).getResearch_number());
-        holder.checkTimeTv.setText(coordinationInfos.get(position).getCheck_time());
-        holder.imgUrlTv.setText(coordinationInfos.get(position).getImg_url());
+        if(!coordinationInfos.get(position).getDetail_1_key().equals("null")){
+            holder.key1_tv.setText(coordinationInfos.get(position).getDetail_1_key()+": ");
+        }
+
+        if(!coordinationInfos.get(position).getDetail_1_value().equals("null"))
+        {
+            holder.value1_tv.setText(coordinationInfos.get(position).getDetail_1_value());
+        }
+
+        if(!coordinationInfos.get(position).getDetail_2_key().equals("null"))
+        {
+            holder.key2_tv.setText(coordinationInfos.get(position).getDetail_2_key()+": ");
+        }
+
+        if(!coordinationInfos.get(position).getDetail_2_value().equals("null"))
+        {
+            holder.value2_tv.setText(coordinationInfos.get(position).getDetail_2_value());
+        }
+
+        if(!coordinationInfos.get(position).getDetail_3_key().equals("null"))
+        {
+            holder.key3_tv.setText(coordinationInfos.get(position).getDetail_3_key()+": ");
+        }
+
+        if(!coordinationInfos.get(position).getDetail_3_value().equals("null"))
+        {
+            holder.value3_tv.setText(coordinationInfos.get(position).getDetail_3_value());
+        }
+
+        if(!coordinationInfos.get(position).getDetail_4_key().equals("null"))
+        {
+            holder.key4_tv.setText(coordinationInfos.get(position).getDetail_4_key()+": ");
+        }
+
+        if(!coordinationInfos.get(position).getDetail_4_value().equals("null"))
+        {
+            holder.value4_tv.setText(coordinationInfos.get(position).getDetail_4_value());
+        }
+
         if (!TextUtils.isEmpty(coordinationInfos.get(position).getId())) {
             String url = mContext.getString(R.string.img_url, Url.BASE_URL,  coordinationInfos.get(position).getId());
             Log.i("Coordination", "url:" + url);
@@ -91,10 +130,14 @@ public class CoordinationAdapter extends BaseAdapter {
     }
 
     private class Holder {
-        private TextView detailAddressTv;
-        private TextView researchNumberTv;
-        private TextView checkTimeTv;
-        private TextView imgUrlTv;
+        private TextView key1_tv;
+        private TextView value1_tv;
+        private TextView key2_tv;
+        private TextView value2_tv;
+        private TextView key3_tv;
+        private TextView value3_tv;
+        private TextView key4_tv;
+        private TextView value4_tv;
         private View divider;
         private ImageView imgIv;
     }

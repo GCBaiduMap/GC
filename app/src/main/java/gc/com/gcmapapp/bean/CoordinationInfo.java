@@ -5,31 +5,133 @@ package gc.com.gcmapapp.bean;
  */
 
 public class CoordinationInfo {
-    private String check_time;
-    private String detail_address;
-    private String id;
-    private String img_url;
-    private double latitude;
-    private double longitude;
-    private String question_number;
-    private String question_type;
-    private String research_name;
-    private String research_number;
 
-    public String getCheck_time() {
-        return check_time;
+    public String getDetail_1_key() {
+        return detail_1_key;
     }
 
-    public void setCheck_time(String check_time) {
-        this.check_time = check_time;
+    public void setDetail_1_key(String detail_1_key) {
+        this.detail_1_key = detail_1_key;
     }
 
-    public String getDetail_address() {
-        return detail_address;
+    public String getDetail_1_value() {
+        return detail_1_value;
     }
 
-    public void setDetail_address(String detail_address) {
-        this.detail_address = detail_address;
+    public void setDetail_1_value(String detail_1_value) {
+        this.detail_1_value = detail_1_value;
+    }
+
+    public String getDetail_2_key() {
+        return detail_2_key;
+    }
+
+    public void setDetail_2_key(String detail_2_key) {
+        this.detail_2_key = detail_2_key;
+    }
+
+    public String getDetail_2_value() {
+        return detail_2_value;
+    }
+
+    public void setDetail_2_value(String detail_2_value) {
+        this.detail_2_value = detail_2_value;
+    }
+
+    public String getDetail_3_key() {
+        return detail_3_key;
+    }
+
+    public void setDetail_3_key(String detail_3_key) {
+        this.detail_3_key = detail_3_key;
+    }
+
+    public String getDetail_3_value() {
+        return detail_3_value;
+    }
+
+    public void setDetail_3_value(String detail_3_value) {
+        this.detail_3_value = detail_3_value;
+    }
+
+    public String getDetail_4_key() {
+        return detail_4_key;
+    }
+
+    public void setDetail_4_key(String detail_4_key) {
+        this.detail_4_key = detail_4_key;
+    }
+
+    public String getDetail_4_value() {
+        return detail_4_value;
+    }
+
+    public void setDetail_4_value(String detail_4_value) {
+        this.detail_4_value = detail_4_value;
+    }
+
+    public String getDetail_5_key() {
+        return detail_5_key;
+    }
+
+    public void setDetail_5_key(String detail_5_key) {
+        this.detail_5_key = detail_5_key;
+    }
+
+    public String getDetail_5_value() {
+        return detail_5_value;
+    }
+
+    public void setDetail_5_value(String detail_5_value) {
+        this.detail_5_value = detail_5_value;
+    }
+
+    public String getDetail_6_key() {
+        return detail_6_key;
+    }
+
+    public void setDetail_6_key(String detail_6_key) {
+        this.detail_6_key = detail_6_key;
+    }
+
+    public String getDetail_6_value() {
+        return detail_6_value;
+    }
+
+    public void setDetail_6_value(String detail_6_value) {
+        this.detail_6_value = detail_6_value;
+    }
+
+    public String getDetail_7_key() {
+        return detail_7_key;
+    }
+
+    public void setDetail_7_key(String detail_7_key) {
+        this.detail_7_key = detail_7_key;
+    }
+
+    public String getDetail_7_value() {
+        return detail_7_value;
+    }
+
+    public void setDetail_7_value(String detail_7_value) {
+        this.detail_7_value = detail_7_value;
+    }
+
+    public String getDetail_8_key() {
+        return detail_8_key;
+    }
+
+    public void setDetail_8_key(String detail_8_key) {
+        this.detail_8_key = detail_8_key;
+    }
+
+    public String getDetail_8_value() {
+        return detail_8_value;
+    }
+
+    public void setDetail_8_value(String detail_8_value) {
+        this.detail_8_value = detail_8_value;
     }
 
     public String getId() {
@@ -40,60 +142,22 @@ public class CoordinationInfo {
         this.id = id;
     }
 
-    public String getImg_url() {
-        return img_url;
-    }
-
-    public void setImg_url(String img_url) {
-        this.img_url = img_url;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getQuestion_number() {
-        return question_number;
-    }
-
-    public void setQuestion_number(String question_number) {
-        this.question_number = question_number;
-    }
-
-    public String getQuestion_type() {
-        return question_type;
-    }
-
-    public void setQuestion_type(String question_type) {
-        this.question_type = question_type;
-    }
-
-    public String getResearch_name() {
-        return research_name;
-    }
-
-    public void setResearch_name(String research_name) {
-        this.research_name = research_name;
-    }
-
-    public String getResearch_number() {
-        return research_number;
-    }
-
-    public void setResearch_number(String research_number) {
-        this.research_number = research_number;
-    }
+    private String detail_1_key;
+    private String detail_1_value;
+    private String detail_2_key;
+    private String detail_2_value;
+    private String detail_3_key;
+    private String detail_3_value;
+    private String detail_4_key;
+    private String detail_4_value;
+    private String detail_5_key;
+    private String detail_5_value;
+    private String detail_6_key;
+    private String detail_6_value;
+    private String detail_7_key;
+    private String detail_7_value;
+    private String detail_8_key;
+    private String detail_8_value;
+    private String id;
 }
 

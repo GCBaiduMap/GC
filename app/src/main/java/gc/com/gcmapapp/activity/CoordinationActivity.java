@@ -37,20 +37,46 @@ import gc.com.gcmapapp.utils.ToastUtils;
 public class CoordinationActivity extends BaseActivity {
 
 
-    @BindView(R.id.detail_address_tv)
-     TextView detailAddressTv;
-    @BindView(R.id.research_number_tv)
-     TextView researchNumberTv;
-    @BindView(R.id.check_time_tv)
-     TextView checkTimeTv;
-    @BindView(R.id.img_url_tv)
-     TextView imgUrlTv;
-    @BindView(R.id.lat_tv)
-    TextView latTv;
-    @BindView(R.id.lng_tv)
-    TextView lngTv;
+    @BindView(R.id.key1_tv)
+     TextView key1TV;
+    @BindView(R.id.value1_tv)
+     TextView value1TV;
+    @BindView(R.id.key2_tv)
+    TextView key2TV;
+    @BindView(R.id.value2_tv)
+    TextView value2TV;
+    @BindView(R.id.key3_tv)
+    TextView key3TV;
+    @BindView(R.id.value3_tv)
+    TextView value3TV;
+    @BindView(R.id.key4_tv)
+    TextView key4TV;
+    @BindView(R.id.value4_tv)
+    TextView value4TV;
+
+    @BindView(R.id.key5_tv)
+    TextView key5TV;
+    @BindView(R.id.value5_tv)
+    TextView value5TV;
+
+    @BindView(R.id.key6_tv)
+    TextView key6TV;
+    @BindView(R.id.value6_tv)
+    TextView value6TV;
+
+    @BindView(R.id.key7_tv)
+    TextView key7TV;
+    @BindView(R.id.value7_tv)
+    TextView value7TV;
+
+    @BindView(R.id.key8_tv)
+    TextView key8TV;
+    @BindView(R.id.value8_tv)
+    TextView value8TV;
+
     @BindView(R.id.img_iv)
     ImageView imgIv;
+
     @BindView(R.id.back_ib)
     ImageButton backIb;
     ImageLoaderUtil imageLoaderUtil ;
@@ -65,18 +91,92 @@ public class CoordinationActivity extends BaseActivity {
     }
 
     private void iniView(){
-        detailAddressTv.setText(getIntent().getStringExtra("detail_address"));
-        researchNumberTv.setText(getIntent().getStringExtra("research_number"));
-        checkTimeTv.setText(getIntent().getStringExtra("check_time"));
-        imgUrlTv.setText(getIntent().getStringExtra("img_url"));
-        latTv.setText(getIntent().getStringExtra("lat"));
-        lngTv.setText(getIntent().getStringExtra("lng"));
         if (!TextUtils.isEmpty(getIntent().getStringExtra("img_id"))) {
             String url = context.getString(R.string.img_url, Url.BASE_URL,  getIntent().getStringExtra("img_id"));
             Log.i("Coordination", "url:" + url);
             imageLoaderUtil.displayImage(url, imgIv, ImageLoader.getInstance());
         } else {
             imgIv.setImageResource(R.mipmap.ic_default_big);
+        }
+
+        if(!getIntent().getStringExtra("getDetail_1_key").equals("null"))
+        {
+            key1TV.setText(getIntent().getStringExtra("getDetail_1_key")+": ");
+        }
+
+        if(!getIntent().getStringExtra("getDetail_1_value").equals("null"))
+        {
+            value1TV.setText(getIntent().getStringExtra("getDetail_1_value"));
+        }
+
+        if(!getIntent().getStringExtra("getDetail_2_key").equals("null"))
+        {
+            key2TV.setText(getIntent().getStringExtra("getDetail_2_key")+": ");
+        }
+
+        if(!getIntent().getStringExtra("getDetail_2_value").equals("null"))
+        {
+            value2TV.setText(getIntent().getStringExtra("getDetail_2_value"));
+        }
+
+        if(!getIntent().getStringExtra("getDetail_3_key").equals("null"))
+        {
+            key3TV.setText(getIntent().getStringExtra("getDetail_3_key")+": ");
+        }
+
+        if(!getIntent().getStringExtra("getDetail_3_value").equals("null"))
+        {
+            value3TV.setText(getIntent().getStringExtra("getDetail_3_value"));
+        }
+
+        if(!getIntent().getStringExtra("getDetail_4_key").equals("null"))
+        {
+            key4TV.setText(getIntent().getStringExtra("getDetail_4_key")+": ");
+        }
+
+        if(!getIntent().getStringExtra("getDetail_4_value").equals("null"))
+        {
+            value4TV.setText(getIntent().getStringExtra("getDetail_4_value"));
+        }
+
+        if(!getIntent().getStringExtra("getDetail_5_key").equals("null"))
+        {
+            key5TV.setText(getIntent().getStringExtra("getDetail_5_key")+": ");
+        }
+
+        if(!getIntent().getStringExtra("getDetail_5_value").equals("null"))
+        {
+            value5TV.setText(getIntent().getStringExtra("getDetail_5_value"));
+        }
+
+        if(!getIntent().getStringExtra("getDetail_6_key").equals("null"))
+        {
+            key6TV.setText(getIntent().getStringExtra("getDetail_6_key")+": ");
+        }
+
+        if(!getIntent().getStringExtra("getDetail_6_value").equals("null"))
+        {
+            value6TV.setText(getIntent().getStringExtra("getDetail_6_value"));
+        }
+
+        if(!getIntent().getStringExtra("getDetail_7_key").equals("null"))
+        {
+            key7TV.setText(getIntent().getStringExtra("getDetail_7_key")+": ");
+        }
+
+        if(!getIntent().getStringExtra("getDetail_7_value").equals("null"))
+        {
+            value7TV.setText(getIntent().getStringExtra("getDetail_7_value"));
+        }
+
+        if(!getIntent().getStringExtra("getDetail_8_key").equals("null"))
+        {
+            key8TV.setText(getIntent().getStringExtra("getDetail_8_key")+": ");
+        }
+
+        if(!getIntent().getStringExtra("getDetail_8_value").equals("null"))
+        {
+            value8TV.setText(getIntent().getStringExtra("getDetail_8_value"));
         }
     }
 

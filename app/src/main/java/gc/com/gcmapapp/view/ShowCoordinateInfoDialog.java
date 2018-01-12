@@ -47,13 +47,23 @@ public class ShowCoordinateInfoDialog extends Dialog {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				Intent intent = new Intent(context, CoordinationActivity.class);
-				intent.putExtra("detail_address", coordinationInfos.get(i).getDetail_address());
-				intent.putExtra("research_number", coordinationInfos.get(i).getResearch_number());
-				intent.putExtra("check_time", coordinationInfos.get(i).getCheck_time());
-				intent.putExtra("img_url", coordinationInfos.get(i).getImg_url());
 				intent.putExtra("img_id", coordinationInfos.get(i).getId());
-				intent.putExtra("lat", coordinationInfos.get(i).getLatitude() + "");
-				intent.putExtra("lng", coordinationInfos.get(i).getLongitude() + "");
+				intent.putExtra("getDetail_1_key", coordinationInfos.get(i).getDetail_1_key());
+				intent.putExtra("getDetail_1_value", coordinationInfos.get(i).getDetail_1_value());
+				intent.putExtra("getDetail_2_key", coordinationInfos.get(i).getDetail_2_key());
+				intent.putExtra("getDetail_2_value", coordinationInfos.get(i).getDetail_2_value());
+				intent.putExtra("getDetail_3_key", coordinationInfos.get(i).getDetail_3_key());
+				intent.putExtra("getDetail_3_value", coordinationInfos.get(i).getDetail_3_value());
+				intent.putExtra("getDetail_4_key", coordinationInfos.get(i).getDetail_4_key());
+				intent.putExtra("getDetail_4_value", coordinationInfos.get(i).getDetail_4_value());
+				intent.putExtra("getDetail_5_key", coordinationInfos.get(i).getDetail_5_key());
+				intent.putExtra("getDetail_5_value", coordinationInfos.get(i).getDetail_5_value());
+				intent.putExtra("getDetail_6_key", coordinationInfos.get(i).getDetail_6_key());
+				intent.putExtra("getDetail_6_value", coordinationInfos.get(i).getDetail_6_value());
+				intent.putExtra("getDetail_7_key", coordinationInfos.get(i).getDetail_7_key());
+				intent.putExtra("getDetail_7_value", coordinationInfos.get(i).getDetail_7_value());
+				intent.putExtra("getDetail_8_key", coordinationInfos.get(i).getDetail_8_key());
+				intent.putExtra("getDetail_8_value", coordinationInfos.get(i).getDetail_8_value());
 				context.startActivity(intent);
 				dismiss();
 			}
