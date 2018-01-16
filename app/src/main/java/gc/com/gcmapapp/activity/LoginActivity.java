@@ -38,8 +38,6 @@ public class LoginActivity extends BaseActivity {
     EditText edtPassword;
     @BindView(R.id.layout_login)
     FrameLayout login;
-    @BindView(R.id.container)
-    RelativeLayout container;
 
 
     @Override
