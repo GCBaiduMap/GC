@@ -18,6 +18,7 @@ public class MapResult {
     private String nextLevel;
     private String text;
     private String key;
+    private String color;
 
     public String getCurrentLevel() {
         return currentLevel;
@@ -121,6 +122,14 @@ public class MapResult {
         bundle.putString("text", text);
         bundle.putString("key", key);
         return bundle;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
 

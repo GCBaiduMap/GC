@@ -30,6 +30,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -547,6 +548,13 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
 //            mClusterManager.cluster();
             for (MapResult mapResult : mapResults) {
                 View view = LayoutInflater.from(context).inflate(R.layout.item_marker, null);
+                if(!TextUtils.isEmpty(mapResult.getColor()))
+                {
+                    LinearLayout linear = view.findViewById(R.id.line_marker);
+                    String c = mapResult.getColor().replace("#","ic_");
+                    int drawableId = context.getResources().getIdentifier(c,"mipmap", context.getPackageName());
+                    linear.setBackgroundResource(drawableId);
+                }
                 TextView tv = view.findViewById(R.id.text);
                 tv.setText(context.getString(R.string.marker_info, mapResult.getText(), mapResult.getTotalitem()));
                 BitmapDescriptor bd = BitmapDescriptorFactory
