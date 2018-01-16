@@ -89,7 +89,7 @@ public class LoginActivity extends BaseActivity {
         }, lifecycleSubject);
     }
 
-    @OnClick(R.id.ib_setting)
+    @OnClick(R.id.linear_setting)
     public void setHost(){
         final EditText editText = new EditText(context);
         editText.setText((String) SharePreferenceUtil.get(getApplicationContext(), Constants.HOST, ""));
