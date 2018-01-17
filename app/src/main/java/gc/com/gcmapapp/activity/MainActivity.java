@@ -628,7 +628,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
                         WelcomeDialog welcomeDialog = WelcomeDialog.createDialog(context);
                         welcomeDialog.setContent(name,projectName);
                         welcomeDialog.show();
-                        SharePreferenceUtil.put(getApplicationContext(), Constants.PROJECTNAME, "1");
+                        SharePreferenceUtil.put(getApplicationContext(), Constants.SHOWONCE, "1");
                     }
                 }
 
