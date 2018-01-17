@@ -3,22 +3,23 @@
     android:id="@+id/integral_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="40px"
-    android:layout_marginRight="40px"
     android:gravity="center"
-
     android:orientation="vertical">
     <LinearLayout
         android:id="@+id/container_linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="40px"
+        android:layout_marginRight="40px"
         android:gravity="center"
-        android:background="@color/white"
+        android:background="@drawable/welcomedialog_background"
         android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100px"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
         android:gravity="center"
+        android:paddingBottom="10dp"
         android:background="@color/white"
         android:orientation="horizontal">
 
@@ -26,6 +27,9 @@
             android:id="@+id/tv1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="20px"
+            android:layout_marginRight="20px"
+            android:gravity="center"
             android:text=""
             android:textColor="@color/grey"
             android:textSize="16dp" />
@@ -34,8 +38,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150px"
+        android:layout_height="wrap_content"
         android:gravity="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:background="@color/white"
         android:orientation="horizontal">
 
@@ -43,6 +49,9 @@
             android:id="@+id/tv2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="20px"
+            android:layout_marginRight="20px"
+            android:gravity="center"
             android:text=""
             android:textColor="@color/grey"
             android:textSize="16dp" />
@@ -50,17 +59,20 @@
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="60dp"
         android:gravity="center"
-        android:layout_height="40dp"
-        android:background="@color/filtersfab"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/btn_close"
             android:clickable="false"
+            android:layout_marginLeft="20px"
+            android:layout_marginRight="20px"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@null"
+            android:background="#4F90DB"
             android:textColor="@color/white"
             android:text="关闭" />
     </LinearLayout>
