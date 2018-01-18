@@ -92,6 +92,7 @@ import gc.com.gcmapapp.utils.ScreenUtils;
 import gc.com.gcmapapp.utils.SharePreferenceUtil;
 import gc.com.gcmapapp.utils.ToastUtils;
 import gc.com.gcmapapp.utils.TreeUtils;
+import gc.com.gcmapapp.view.ConfirmDialog;
 import gc.com.gcmapapp.view.ShowCoordinateInfoDialog;
 import gc.com.gcmapapp.view.WelcomeDialog;
 import mapapi.clusterutil.clustering.Cluster;
@@ -361,7 +362,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         }
         Gson gson = new Gson();
         String jsonId = gson.toJson(mapInfos);
-        if (!TextUtils.isEmpty(jsonId)) {
+        if (!TextUtils.isEmpty(jsonId)&&!jsonId.equals("[]")) {
             getMapInfo(jsonId);
         }
     }
@@ -612,12 +613,15 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     }
 
     public void getMapInfo(String jsonId) {
-
+        clickedMarkers.clear();
         HttpUtil.getInstance().toSubscribe(Api.getDefault(context).getMapInfo(jsonId), new ProgressSubscriber<List<MapResult>>(this) {
             @Override
             protected void _onNext(List<MapResult> mapResults) {
                 mBaiduMap.clear();
                 addMarkers(mapResults);
+                float zoom = 12;
+                ms = new MapStatus.Builder().target(new LatLng(mapResults.get(0).getLatitude(), mapResults.get(0).getLongitude())).zoom(zoom).build();
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(ms));
                 String showOnce = (String) SharePreferenceUtil.get(getApplicationContext(), Constants.SHOWONCE, "");
                 if(TextUtils.isEmpty(showOnce))
                 {
@@ -733,7 +737,10 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
                 }
 
             } else {
-                return super.onKeyDown(keyCode, event);
+                ConfirmDialog confirm = ConfirmDialog.createDialog(context);
+                confirm.setContent("您确认退出程序吗？");
+                confirm.show();
+                return false;
             }
             return false;
         } else {
