@@ -48,7 +48,6 @@ public class ShowCoordinateInfoDialog extends Dialog {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				Intent intent = new Intent(context, CoordinationActivity.class);
 				intent.putExtra("img_id", coordinationInfos.get(i).getId());
-				intent.putExtra("getDetail_1_key", coordinationInfos.get(i).getDetail_1_key());
 				intent.putExtra("getDetail_1_value", coordinationInfos.get(i).getDetail_1_value());
 				intent.putExtra("getDetail_2_key", coordinationInfos.get(i).getDetail_2_key());
 				intent.putExtra("getDetail_2_value", coordinationInfos.get(i).getDetail_2_value());
@@ -62,8 +61,8 @@ public class ShowCoordinateInfoDialog extends Dialog {
 				intent.putExtra("getDetail_6_value", coordinationInfos.get(i).getDetail_6_value());
 				intent.putExtra("getDetail_7_key", coordinationInfos.get(i).getDetail_7_key());
 				intent.putExtra("getDetail_7_value", coordinationInfos.get(i).getDetail_7_value());
-				intent.putExtra("getDetail_8_key", coordinationInfos.get(i).getDetail_8_key());
-				intent.putExtra("getDetail_8_value", coordinationInfos.get(i).getDetail_8_value());
+//				intent.putExtra("getDetail_8_key", coordinationInfos.get(i).getDetail_8_key());
+//				intent.putExtra("getDetail_8_value", coordinationInfos.get(i).getDetail_8_value());
 				context.startActivity(intent);
 				dismiss();
 			}

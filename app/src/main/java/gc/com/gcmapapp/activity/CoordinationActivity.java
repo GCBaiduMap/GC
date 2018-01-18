@@ -72,11 +72,6 @@ public class CoordinationActivity extends BaseActivity {
     @BindView(R.id.value7_tv)
     TextView value7TV;
 
-    @BindView(R.id.key8_tv)
-    TextView key8TV;
-    @BindView(R.id.value8_tv)
-    TextView value8TV;
-
     @BindView(R.id.img_iv)
     ImageView imgIv;
 
@@ -121,11 +116,6 @@ public class CoordinationActivity extends BaseActivity {
             });
         } else {
             imgIv.setImageResource(R.mipmap.ic_default_big);
-        }
-
-        if(!getIntent().getStringExtra("getDetail_1_key").equals("null"))
-        {
-            key1TV.setText(getIntent().getStringExtra("getDetail_1_key")+": ");
         }
 
         if(!getIntent().getStringExtra("getDetail_1_value").equals("null"))
@@ -191,16 +181,6 @@ public class CoordinationActivity extends BaseActivity {
         if(!getIntent().getStringExtra("getDetail_7_value").equals("null"))
         {
             value7TV.setText(getIntent().getStringExtra("getDetail_7_value"));
-        }
-
-        if(!getIntent().getStringExtra("getDetail_8_key").equals("null"))
-        {
-            key8TV.setText(getIntent().getStringExtra("getDetail_8_key")+": ");
-        }
-
-        if(!getIntent().getStringExtra("getDetail_8_value").equals("null"))
-        {
-            value8TV.setText(getIntent().getStringExtra("getDetail_8_value"));
         }
     }
 

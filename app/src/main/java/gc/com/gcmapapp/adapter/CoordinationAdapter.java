@@ -62,7 +62,6 @@ public class CoordinationAdapter extends BaseAdapter {
         if (null == view) {
             view = mLayoutInflater.inflate(R.layout.item_coordination, null);
             holder = new Holder();
-            holder.key1_tv = (TextView)view.findViewById(R.id.key1_tv);
             holder.value1_tv = (TextView)view.findViewById(R.id.value1_tv);
             holder.key2_tv = (TextView)view.findViewById(R.id.key2_tv);
             holder.value2_tv = (TextView)view.findViewById(R.id.value2_tv);
@@ -75,9 +74,6 @@ public class CoordinationAdapter extends BaseAdapter {
             view.setTag(holder);
         } else {
             holder = (Holder) view.getTag();
-        }
-        if(!coordinationInfos.get(position).getDetail_1_key().equals("null")){
-            holder.key1_tv.setText(coordinationInfos.get(position).getDetail_1_key()+": ");
         }
 
         if(!coordinationInfos.get(position).getDetail_1_value().equals("null"))
@@ -116,7 +112,7 @@ public class CoordinationAdapter extends BaseAdapter {
         }
 
         if (!TextUtils.isEmpty(coordinationInfos.get(position).getId())) {
-            String url = mContext.getString(R.string.img_url, Url.BASE_URL,  coordinationInfos.get(position).getId());
+            String url = mContext.getString(R.string.img_thumb_url, Url.BASE_URL,  coordinationInfos.get(position).getId());
             Log.i("Coordination", "url:" + url);
             imageLoaderUtil.displayImage(url, holder.imgIv, ImageLoader.getInstance(), new ImageLoadingListener() {
                 @Override
@@ -153,7 +149,6 @@ public class CoordinationAdapter extends BaseAdapter {
     }
 
     private class Holder {
-        private TextView key1_tv;
         private TextView value1_tv;
         private TextView key2_tv;
         private TextView value2_tv;

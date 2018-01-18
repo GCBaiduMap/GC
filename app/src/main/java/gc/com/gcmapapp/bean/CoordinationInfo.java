@@ -118,22 +118,6 @@ public class CoordinationInfo {
         this.detail_7_value = detail_7_value;
     }
 
-    public String getDetail_8_key() {
-        return detail_8_key;
-    }
-
-    public void setDetail_8_key(String detail_8_key) {
-        this.detail_8_key = detail_8_key;
-    }
-
-    public String getDetail_8_value() {
-        return detail_8_value;
-    }
-
-    public void setDetail_8_value(String detail_8_value) {
-        this.detail_8_value = detail_8_value;
-    }
-
     public String getId() {
         return id;
     }
@@ -156,8 +140,6 @@ public class CoordinationInfo {
     private String detail_6_value;
     private String detail_7_key;
     private String detail_7_value;
-    private String detail_8_key;
-    private String detail_8_value;
     private String id;
 }
 

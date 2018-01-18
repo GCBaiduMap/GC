@@ -129,10 +129,21 @@
         </FrameLayout>
     </LinearLayout>
 
-
-
-
-
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="上海旭中市场信息咨询有限公司"
+        android:textSize="18dp"
+        android:paddingBottom="20dp"
+        android:textColor="#AFB3B6"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
+</RelativeLayout>
 
 </LinearLayout>
