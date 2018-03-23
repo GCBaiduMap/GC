@@ -131,7 +131,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
     private String currentLevel;
     private List<String> clickedMarkers = new ArrayList<>();
     private boolean backLoading;
-
+    private String fitterStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -362,6 +362,7 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
         }
         Gson gson = new Gson();
         String jsonId = gson.toJson(mapInfos);
+        fitterStr = jsonId;
         if (!TextUtils.isEmpty(jsonId)&&!jsonId.equals("[]")) {
             getMapInfo(jsonId);
         }
@@ -635,12 +636,12 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
                         SharePreferenceUtil.put(getApplicationContext(), Constants.SHOWONCE, "1");
                     }
                 }
-
+                backLoading=false;
             }
 
             @Override
             protected void _onError(String message) {
-
+                backLoading=false;
             }
         }, lifecycleSubject);
     }
@@ -730,10 +731,21 @@ public class MainActivity extends BaseActivity implements BaiduMap.OnMapLoadedCa
             if (clickedMarkers.size() > 0) {
                 if (!backLoading) {
                     backLoading = true;
-                    String value = clickedMarkers.get(clickedMarkers.size() - 1);
-                    String[] values = value.split(",");
-                    getPreMapInfoByKey(values[0], values[1], values[2]);
-                    clickedMarkers.remove(value);
+                    if(!TextUtils.isEmpty(fitterStr)&&clickedMarkers.size()==1)
+                    {
+                        if (!TextUtils.isEmpty(fitterStr)&&!fitterStr.equals("[]")) {
+                            String value = clickedMarkers.get(clickedMarkers.size() - 1);
+                            getMapInfo(fitterStr);
+                            clickedMarkers.remove(value);
+                        }
+                    }
+                    else
+                    {
+                        String value = clickedMarkers.get(clickedMarkers.size() - 1);
+                        String[] values = value.split(",");
+                        getPreMapInfoByKey(values[0], values[1], values[2]);
+                        clickedMarkers.remove(value);
+                    }
                 }
 
             } else {
