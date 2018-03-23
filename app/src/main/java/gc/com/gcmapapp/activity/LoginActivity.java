@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -30,23 +31,28 @@ import okhttp3.HttpUrl;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends BaseActivity {
-
-
     @BindView(R.id.edt_username)
     EditText edtUsername;
     @BindView(R.id.edt_password)
     EditText edtPassword;
     @BindView(R.id.layout_login)
     FrameLayout login;
-
+    @BindView(R.id.rem_selector)
+    CheckBox rem_checkbox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        String rem_userName = (String) SharePreferenceUtil.get(getApplicationContext(), Constants.REM_USERNAME, "");
+        String rem_passWord = (String) SharePreferenceUtil.get(getApplicationContext(), Constants.REM_PASSWORD, "");
+        if(!TextUtils.isEmpty(rem_userName)&&!TextUtils.isEmpty(rem_passWord))
+        {
+            edtUsername.setText(rem_userName);
+            edtPassword.setText(rem_passWord);
+        }
     }
-
 
     @OnClick(R.id.layout_login)
     public void login(View view) {
@@ -77,6 +83,11 @@ public class LoginActivity extends BaseActivity {
                 SharePreferenceUtil.put(getApplicationContext(), Constants.TOKEN, login.getToken());
                 SharePreferenceUtil.put(getApplicationContext(), Constants.USERNAME, login.getReal_name());
                 SharePreferenceUtil.put(getApplicationContext(), Constants.SHOWONCE, "");
+                if(rem_checkbox.isChecked())
+                {
+                    SharePreferenceUtil.put(getApplicationContext(), Constants.REM_USERNAME, edtUsername.getText());
+                    SharePreferenceUtil.put(getApplicationContext(), Constants.REM_PASSWORD, edtPassword.getText());
+                }
                 Intent intent = new Intent(context, MainActivity.class);
                 startActivity(intent);
                 finish();

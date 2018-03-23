@@ -173,15 +173,15 @@ public class CoordinationActivity extends BaseActivity {
             value6TV.setText(getIntent().getStringExtra("getDetail_6_value"));
         }
 
-        if(!getIntent().getStringExtra("getDetail_7_key").equals("null"))
-        {
-            key7TV.setText(getIntent().getStringExtra("getDetail_7_key")+": ");
-        }
-
-        if(!getIntent().getStringExtra("getDetail_7_value").equals("null"))
-        {
-            value7TV.setText(getIntent().getStringExtra("getDetail_7_value"));
-        }
+//        if(!getIntent().getStringExtra("getDetail_7_key").equals("null"))
+//        {
+//            key7TV.setText(getIntent().getStringExtra("getDetail_7_key")+": ");
+//        }
+//
+//        if(!getIntent().getStringExtra("getDetail_7_value").equals("null"))
+//        {
+//            value7TV.setText(getIntent().getStringExtra("getDetail_7_value"));
+//        }
     }
 
     @OnClick(R.id.back_ib)

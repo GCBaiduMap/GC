@@ -9,6 +9,8 @@ public class Constants {
     public static final String TOKEN= "token";
     public static final String HOST= "host";
     public static final String USERNAME= "username";
+    public static final String REM_USERNAME= "rem_username";
+    public static final String REM_PASSWORD= "rem_password";
     public static final String PROJECTNAME= "projectname";
     public static final String SHOWONCE= "showonce";
 }

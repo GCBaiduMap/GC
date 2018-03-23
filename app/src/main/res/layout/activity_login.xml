@@ -75,6 +75,7 @@
                 android:textColor="#fff"
                 android:textColorHint="#8392A9"
                 android:textSize="19dp"
+                android:text="jdhuwai1"
                 android:layout_height="match_parent" />
         </LinearLayout>
     
@@ -102,6 +103,7 @@
                 android:textColorHint="#8392A9"
                 android:inputType="textPassword"
                 android:textSize="19dp"
+                android:text="jdhwadmin1"
                 android:layout_height="match_parent" />
 
         </LinearLayout>
@@ -110,15 +112,28 @@
             android:layout_height="1dp"
             android:background="#FCFDFF"
             android:layout_marginTop="11dp"/>
-
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <CheckBox
+                android:id="@+id/rem_selector"
+                android:textColor="@color/white"
+                android:layout_gravity="left"
+                android:text="记住密码"
+                android:checked="false"
+                android:button="@drawable/checkbox_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
         <FrameLayout
             android:id="@+id/layout_login"
             android:layout_centerHorizontal="true"
             android:layout_width="match_parent"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="30dp"
             android:background="@drawable/login_background"
             android:layout_height="50dp" >
-
             <TextView
                 android:layout_gravity="center"
                 android:text="登 录"
